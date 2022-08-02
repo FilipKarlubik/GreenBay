@@ -16,11 +16,13 @@ namespace GreenBay.Controllers
     {
         private readonly ISecurityService _securityService;
         private readonly IStoreService _storeService;
+        private readonly ISellService _sellService;
 
-        public UserController(ISecurityService securityService, IStoreService storeService)
+        public UserController(ISecurityService securityService, IStoreService storeService, ISellService sellService)
         {
             _securityService = securityService;
             _storeService = storeService;
+            _sellService = sellService;
         }
 
 
@@ -35,35 +37,29 @@ namespace GreenBay.Controllers
                 var token = _securityService.GenerateToken(user);
                 return Ok(token);
             }
-            return NotFound("User not found");
+            return NotFound("User not found.");
         }
 
         [AllowAnonymous]
         [HttpPost("create")]
         public ActionResult Create([FromBody] UserCreate userCreate)
         {
-            User user = _securityService.CheckDuplicity(userCreate);
-            if (user != null)
+            ResponseObject response = _securityService.CheckDuplicity(userCreate);
+            if (response.StatusCode == 200)
             {
+                User user = _storeService.CreateUser(userCreate);
                 var token = _securityService.GenerateToken(user);
-                _storeService.CreateUser(user);
-                return Ok(token);
+                return StatusCode(200,token);
             }
-            return BadRequest("Not valid parameters or User with that name already exists");
+            return StatusCode(response.StatusCode, response.Message);
         }
         
         [HttpGet("show")]
         [AllowAnonymous]
         [Authorize(Roles ="admin")]
         public ActionResult ShowAllUsers()
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
-            {
-                User user = _securityService.DecodeUser(identity);
-                return Ok(_securityService.ListAllUsers());
-            }
-            return Unauthorized("Not valid token");
+        {           
+            return Ok(_securityService.ListAllUsers());
         }
 
         [HttpPost("money")]
@@ -77,6 +73,18 @@ namespace GreenBay.Controllers
                 return StatusCode(response.StatusCode,response.Message);
             }
             return Unauthorized("Not valid token");
+        }
+
+        [HttpGet("info")]
+        public ActionResult UserInfo()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            User user = _securityService.DecodeUser(identity);
+            if (user != null)
+            {
+                return Ok(_sellService.UserInfoDetailed(user.Id));
+            }
+            return NotFound("User not found.");
         }
     }
 }

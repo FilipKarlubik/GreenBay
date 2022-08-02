@@ -13,13 +13,21 @@ namespace GreenBay.Services
         }
 
 
-        public void CreateUser(User user)
+        public User CreateUser(UserCreate userCreate)
         {
-           _db.Users.Add(user);
-           _db.SaveChanges();
+            string role = "user";
+            if (userCreate.Role.ToLower() == "admin") role = "admin";
+            User user = new User()
+            {
+                Name = userCreate.UserName,Password = userCreate.Password,Email = userCreate.Email        
+            , Dollars = userCreate.Dollars, Role = role};
+
+            _db.Users.Add(user);
+            _db.SaveChanges();
+            return user;
         }
 
-        public void CreateItem(ItemCreate itemNew, int userId)
+        public ResponseObject CreateItem(ItemCreate itemNew, int userId)
         {
             _db.Items.Add(new Item()
             {
@@ -30,6 +38,7 @@ namespace GreenBay.Services
                 UserId = userId
             });
             _db.SaveChanges();
+            return new ResponseObject(200, "New item has been created.");
         }
 
         public ResponseObject ManageMoney(DollarsManage dollars, int id)

@@ -50,7 +50,7 @@ namespace GreenBay.Services
                 }
                 else
                 {
-                    user.Dollars = item.Bid - itemToBid.Bid;
+                    user.Dollars -= (item.Bid - itemToBid.Bid);
                     itemToBid.Bid = item.Bid;
                     if (itemToBid.Bid >= itemToBid.Price)
                     {

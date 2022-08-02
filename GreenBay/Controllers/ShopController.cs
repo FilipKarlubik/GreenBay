@@ -68,8 +68,8 @@ namespace GreenBay.Controllers
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                _storeService.CreateItem(newItem, user.Id);
-                return Ok();
+                ResponseObject response = _storeService.CreateItem(newItem, user.Id);
+                return StatusCode(response.StatusCode, response.Message);
             }
             return Unauthorized("Not valid token");
         }

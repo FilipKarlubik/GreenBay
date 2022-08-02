@@ -1,4 +1,5 @@
 ﻿using GreenBay.Context;
+using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,19 @@ namespace GreenBay.Services
                     ));
             }
             return items;
+        }
+
+        public UserInfoFullDto UserInfoDetailed(int id)
+        {
+            User user = _db.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null) return null;
+            return new UserInfoFullDto(user.Id, user.Name, user.Password,user.Email, user.Dollars
+                , user.Role, user.CreatedAt
+                , ListAllItems().Where(i => i.BoughtById > 0 && i.SellingById.Equals(user.Id)).ToList()
+                , ListAllItems().Where(i => i.BoughtById.Equals(user.Id)).ToList()
+                , ListAllItems().Where(i => i.BoughtById == 0 && i.HighestBidBy.Equals(user.Id)).ToList()
+                );
+           
         }
     }
 }

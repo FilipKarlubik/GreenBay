@@ -30,24 +30,30 @@ namespace GreenBay.Services
             return currentUser;
         }
 
-        public User CheckDuplicity(UserCreate userCreate)
+        public ResponseObject CheckDuplicity(UserCreate userCreate)
         {
             // returns null if user is in database
-            if(userCreate == null) return null;
-            if(userCreate.UserName == null || userCreate.UserName == String.Empty) return null;
-            if(userCreate.Password == null || userCreate.Password == String.Empty) return null;
-            if(userCreate.Email == null || userCreate.Email == String.Empty) return null;
-            string role = "user";
-            if (userCreate.Role.ToLower() == "admin") role = "admin";
-            if (_db.Users.Any(u => u.Name.ToLower().Equals(userCreate.UserName.ToLower()))) return null;
-            return new User()
+            if (userCreate == null)
             {
-                Name = userCreate.UserName,
-                Email = userCreate.Email,
-                Password = userCreate.Password,
-                Role = role,
-                Dollars = userCreate.Dollars
-            };
+                return new ResponseObject(400, "Not valid input object.");
+            }
+            if(userCreate.UserName == null || userCreate.UserName == String.Empty)
+            {
+                return new ResponseObject(400, "No UserName was given.");
+            }
+            if (userCreate.Password == null || userCreate.Password == String.Empty)
+            {
+                return new ResponseObject(400, "No password was given.");
+            }
+            if (userCreate.Email == null || userCreate.Email == String.Empty) 
+            {
+                return new ResponseObject(400, "No Email adress was given.");
+            }
+            if (_db.Users.Any(u => u.Name.ToLower().Equals(userCreate.UserName.ToLower()))) 
+            {
+                return new ResponseObject(409, $"User with name {userCreate.UserName} already exists.");
+            }
+            return new ResponseObject(200, $"User {userCreate.UserName} has been created.");
         }
 
         public User DecodeUser(ClaimsIdentity identity)

@@ -8,5 +8,6 @@ namespace GreenBay.Services
         List<ItemInfoDto> ListAllItems();
         List<ItemInfoDto> ListAllBuyableItems(int id);
         List<ItemInfoDto> ListAllSellableItems(int id);
+        UserInfoFullDto UserInfoDetailed(int id);
     }
 }

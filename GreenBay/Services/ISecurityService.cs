@@ -9,7 +9,7 @@ namespace GreenBay.Services
     {
         string GenerateToken(User user);
         User Authenticate(UserLogin userLogin);
-        User CheckDuplicity(UserCreate userCreate);
+        ResponseObject CheckDuplicity(UserCreate userCreate);
         User DecodeUser(ClaimsIdentity claims);
         List<UserInfoDto> ListAllUsers();
     }

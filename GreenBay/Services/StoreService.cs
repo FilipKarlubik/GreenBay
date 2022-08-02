@@ -27,7 +27,7 @@ namespace GreenBay.Services
             return user;
         }
 
-        public ResponseObject CreateItem(ItemCreate itemNew, int userId)
+        public ResponseObject CreateItem(ItemCreate itemNew, User user)
         {
             _db.Items.Add(new Item()
             {
@@ -35,10 +35,10 @@ namespace GreenBay.Services
                 Description = itemNew.Description,
                 Price = itemNew.Price,
                 ImageUrl = itemNew.ImageUrl,
-                UserId = userId
+                UserId = user.Id
             });
-            _db.SaveChanges();
-            return new ResponseObject(200, "New item has been created.");
+            _db.SaveChanges();   
+            return new ResponseObject(200, $"New item {itemNew.Name} has been created, selling by {user.Name}");
         }
 
         public ResponseObject ManageMoney(DollarsManage dollars, int id)
@@ -47,25 +47,24 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "Can not perform operation with negative amount of money");
             }
-            string message = "Your new amount of Dollars is ";
             User user = _db.Users.Find(id);
-            if(dollars.Action.ToLower() == "increase")
+            if (dollars.Action.ToLower() == "increase")
             {
                 user.Dollars += dollars.Amount;
                 _db.SaveChanges();
-                return new ResponseObject(200, message + user.Dollars);
+                return new ResponseObject(200, $"{user.Name}, your new amount of Dollars is {user.Dollars}");
             }
             if(dollars.Action.ToLower() == "decrease")
             {
                 if(user.Dollars - dollars.Amount < 0)
                 {
-                    return new ResponseObject(409, "Not enough money to take back, you have only " + user.Dollars);
+                    return new ResponseObject(409, $"{user.Name}, not enough money to take back, you have only {user.Dollars} Dollars");
                 }
                 else
                 {
                     user.Dollars -= dollars.Amount;
                     _db.SaveChanges();
-                    return new ResponseObject(200, message + user.Dollars);
+                    return new ResponseObject(200, $"{user.Name}, your new amount of Dollars is {user.Dollars}");
                 }
             }
             else

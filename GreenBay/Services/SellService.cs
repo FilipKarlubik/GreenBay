@@ -62,7 +62,7 @@ namespace GreenBay.Services
                 , user.Role, user.CreatedAt
                 , ListAllItems().Where(i => i.BoughtById > 0 && i.SellingById.Equals(user.Id)).ToList()
                 , ListAllItems().Where(i => i.BoughtById.Equals(user.Id)).ToList()
-                , ListAllItems().Where(i => i.BoughtById == 0 && i.HighestBidBy.Equals(user.Id)).ToList()
+                , ListAllItems().Where(i => i.BoughtById == 0 && i.HighestBidById.Equals(user.Id)).ToList()
                 );
            
         }

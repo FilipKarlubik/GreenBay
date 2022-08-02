@@ -68,7 +68,7 @@ namespace GreenBay.Controllers
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                ResponseObject response = _storeService.CreateItem(newItem, user.Id);
+                ResponseObject response = _storeService.CreateItem(newItem, user);
                 return StatusCode(response.StatusCode, response.Message);
             }
             return Unauthorized("Not valid token");
@@ -82,6 +82,32 @@ namespace GreenBay.Controllers
             {
                 User user = _securityService.DecodeUser(identity);
                 ResponseObject response = _buyService.Bid(item, user);
+                return StatusCode(response.StatusCode, response.Message);
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpPost("sell-withdraw")] //withdraw after 7 days,  sell anytime
+        public ActionResult SellOrWithdrawItemIfNotReachPrice([FromBody] ItemAction itemAction)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity);
+                ResponseObject response = _buyService.SellOrWithdraw(itemAction, user);
+                return StatusCode(response.StatusCode, response.Message);
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpPost("buy-withdraw")] // after 10 days - buy for at least half price
+        public ActionResult BuyForAtLeastHalfOrWithdraw([FromBody] ItemAction itemAction)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity);
+                ResponseObject response = _buyService.BuyOrWithdraw(itemAction, user);
                 return StatusCode(response.StatusCode, response.Message);
             }
             return Unauthorized("Not valid token");

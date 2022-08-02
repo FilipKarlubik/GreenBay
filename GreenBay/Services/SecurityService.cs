@@ -23,11 +23,24 @@ namespace GreenBay.Services
             _config = configuration;
         }
 
-        public User Authenticate(UserLogin userLogin)
+        public ResponseObject Authenticate(UserLogin userLogin)
         {
-            var currentUser = _db.Users.FirstOrDefault(u => u.Name.ToLower().Equals(userLogin.UserName.ToLower())
+            if (userLogin.UserName == null || userLogin.UserName == "")
+            {
+                return new ResponseObject(400, "Not valid username.");
+            }
+            if (userLogin.Password == null || userLogin.Password == "")
+            {
+                return new ResponseObject(400, "Not valid password.");
+            }
+            User currentUser = _db.Users.FirstOrDefault(u => u.Name.ToLower().Equals(userLogin.UserName.ToLower())
             && u.Password.Equals(userLogin.Password));
-            return currentUser;
+            if  (currentUser == null)
+            {
+                return new ResponseObject(404, "User not found in database.");
+            }
+            string token = GenerateToken(currentUser);
+            return new ResponseObject(200, token);
         }
 
         public ResponseObject CheckDuplicity(UserCreate userCreate)

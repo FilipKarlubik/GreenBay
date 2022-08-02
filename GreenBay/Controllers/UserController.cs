@@ -30,14 +30,8 @@ namespace GreenBay.Controllers
         [HttpPost("login")]
         public ActionResult Login([FromBody] UserLogin userLogin)
         {
-            var user = _securityService.Authenticate(userLogin);
-            
-            if (user != null)
-            {
-                var token = _securityService.GenerateToken(user);
-                return Ok(token);
-            }
-            return NotFound("User not found.");
+            ResponseObject response = _securityService.Authenticate(userLogin);    
+            return StatusCode(response.StatusCode, response.Message);
         }
 
         [AllowAnonymous]

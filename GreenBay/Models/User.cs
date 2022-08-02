@@ -11,6 +11,7 @@ namespace GreenBay.Models
         public string Password { get; set; }
         public string Role { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int Dollars { get; set; }
 
         public List<Item> Items { get; set; }
 

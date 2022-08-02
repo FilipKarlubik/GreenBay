@@ -1,4 +1,6 @@
 ﻿using GreenBay.Models;
+using GreenBay.Models.DTOs;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace GreenBay.Services
@@ -9,5 +11,6 @@ namespace GreenBay.Services
         User Authenticate(UserLogin userLogin);
         User CheckDuplicity(UserCreate userCreate);
         User DecodeUser(ClaimsIdentity claims);
+        List<UserInfoDto> ListAllUsers();
     }
 }

@@ -1,8 +1,10 @@
 ﻿using GreenBay.Context;
 using GreenBay.Models;
+using GreenBay.Models.DTOs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -30,6 +32,7 @@ namespace GreenBay.Services
 
         public User CheckDuplicity(UserCreate userCreate)
         {
+            // returns null if user is in database
             if(userCreate == null) return null;
             if(userCreate.UserName == null || userCreate.UserName == String.Empty) return null;
             if(userCreate.Password == null || userCreate.Password == String.Empty) return null;
@@ -42,12 +45,14 @@ namespace GreenBay.Services
                 Name = userCreate.UserName,
                 Email = userCreate.Email,
                 Password = userCreate.Password,
-                Role = role
+                Role = role,
+                Dollars = userCreate.Dollars
             };
         }
 
         public User DecodeUser(ClaimsIdentity identity)
         {
+            // returns user with params stored in token
             var userClaims = identity.Claims;
             return new User()
             {
@@ -75,6 +80,17 @@ namespace GreenBay.Services
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public List<UserInfoDto> ListAllUsers()
+        {
+            List<UserInfoDto> users = new List<UserInfoDto>();
+            foreach (User user in _db.Users.ToList())
+            {
+                users.Add(new UserInfoDto( user.Id, user.Name, user.Password, user.Email
+                    ,user.Dollars, user.Role, user.CreatedAt));
+            }
+            return users;
         }
     }
 }

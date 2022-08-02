@@ -9,7 +9,10 @@ namespace GreenBay.Models
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public string ImageUrl { get; set; }
-        public bool Sold { get; set; }
+        public int Price { get; set; }
+        public int BidById { get; set; }
+        public int Bid { get; set; }
+        public int BoughtById { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; }
@@ -17,7 +20,9 @@ namespace GreenBay.Models
         public Item()
         {
             CreatedAt = DateTime.Now;
-            Sold = false;
+            BoughtById = 0;
+            Bid = 0;
+            BidById = 0;
         }
     }
 }

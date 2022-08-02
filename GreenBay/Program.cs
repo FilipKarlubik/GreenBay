@@ -21,7 +21,7 @@ namespace GreenBay
             using (var serviceScope = host.Services.CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                //context.Database.EnsureDeleted();
+                //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
                 context.Database.EnsureCreated();
                 if (context.Users.Count() == 0) context.Users.AddRange(Constants.Users);
                 context.SaveChanges();

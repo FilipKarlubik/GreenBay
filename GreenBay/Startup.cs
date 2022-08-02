@@ -50,6 +50,8 @@ namespace GreenBay
 
             services.AddTransient<ISecurityService, SecurityService>();
             services.AddTransient<IStoreService, StoreService>();
+            services.AddTransient<ISellService, SellService>();
+            services.AddTransient<IBuyService, BuyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

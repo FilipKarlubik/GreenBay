@@ -6,27 +6,85 @@ using System.Security.Claims;
 
 namespace GreenBay.Controllers
 {
+    [ApiController]
     [Route("shop")]
     [Authorize]
-    public class ShopController : Controller
+    public class ShopController : ControllerBase
     {
         private readonly ISecurityService _securityService;
+        private readonly IStoreService _storeService;
+        private readonly ISellService _sellService;
+        private readonly IBuyService _buyService;
 
-        public ShopController(ISecurityService securityService)
+        public ShopController(ISecurityService securityService, IStoreService storeService, ISellService sellService, IBuyService buyService)
         {
             _securityService = securityService;
+            _storeService = storeService;
+            _sellService = sellService;
+            _buyService = buyService;
         }
 
         [HttpGet("list")]
-        public IActionResult ListAllProducts()
+        [Authorize(Roles ="admin")]
+        public ActionResult ListAllProducts()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity); 
+                return Ok(_sellService.ListAllItems());
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpGet("list/buyable")]
+        public ActionResult ListAllBuyableProducts()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok("here they are " + user.Name);
+                return Ok(_sellService.ListAllBuyableItems(user.Id));
             }
-            return Ok("here they are :) ");
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpGet("list/sellable")]
+        public ActionResult ListAllSellableProducts()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity);
+                return Ok(_sellService.ListAllSellableItems(user.Id));
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpPost("create")]
+        public ActionResult CreateNewItem([FromBody] ItemCreate newItem)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity);
+                _storeService.CreateItem(newItem, user.Id);
+                return Ok();
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpPost("bid")]
+        public ActionResult BidOnItem([FromBody] ItemBid item)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                User user = _securityService.DecodeUser(identity);
+                ResponseObject response = _buyService.Bid(item, user);
+                return StatusCode(response.StatusCode, response.Message);
+            }
+            return Unauthorized("Not valid token");
         }
     }
 }

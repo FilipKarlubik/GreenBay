@@ -4,13 +4,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace GreenBay.Controllers
 {
+    [ApiController]
     [Route("user")]
-    [Authorize(Roles ="admin")]
-    public class UserController : Controller
+    [Authorize]
+    public class UserController : ControllerBase
     {
         private readonly ISecurityService _securityService;
         private readonly IStoreService _storeService;
@@ -24,7 +26,7 @@ namespace GreenBay.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserLogin userLogin)
+        public ActionResult Login([FromBody] UserLogin userLogin)
         {
             var user = _securityService.Authenticate(userLogin);
             
@@ -38,7 +40,7 @@ namespace GreenBay.Controllers
 
         [AllowAnonymous]
         [HttpPost("create")]
-        public IActionResult Create([FromBody] UserCreate userCreate)
+        public ActionResult Create([FromBody] UserCreate userCreate)
         {
             User user = _securityService.CheckDuplicity(userCreate);
             if (user != null)
@@ -51,13 +53,28 @@ namespace GreenBay.Controllers
         }
         
         [HttpGet("show")]
-        public IActionResult ShowAllUsers()
+        [AllowAnonymous]
+        [Authorize(Roles ="admin")]
+        public ActionResult ShowAllUsers()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok("here they are " + user.Name);
+                return Ok(_securityService.ListAllUsers());
+            }
+            return Unauthorized("Not valid token");
+        }
+
+        [HttpPost("money")]
+        public ActionResult MoneyChange([FromBody] DollarsManage dollars)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            User user = _securityService.DecodeUser(identity);
+            if (user != null)
+            {
+                ResponseObject response = _storeService.ManageMoney(dollars, user.Id);
+                return StatusCode(response.StatusCode,response.Message);
             }
             return Unauthorized("Not valid token");
         }

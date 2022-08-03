@@ -35,7 +35,7 @@ namespace GreenBay.Controllers
                 User user = _securityService.DecodeUser(identity); 
                 return Ok(_sellService.ListAllItems(page, itemCount));
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpGet("list/buyable")]
@@ -47,7 +47,7 @@ namespace GreenBay.Controllers
                 User user = _securityService.DecodeUser(identity);
                 return Ok(_sellService.ListAllBuyableItems(user.Id, page, itemCount));
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpGet("list/sellable")]
@@ -59,7 +59,7 @@ namespace GreenBay.Controllers
                 User user = _securityService.DecodeUser(identity);
                 return Ok(_sellService.ListAllSellableItems(user.Id, page, itemCount));
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpGet("item")]
@@ -70,7 +70,7 @@ namespace GreenBay.Controllers
             {
                 return StatusCode(response.StatusCode, response.ItemInfo);
             }
-            return StatusCode(response.StatusCode, response.Message);
+            return StatusCode(response.StatusCode, new { error = response.Message });
 
         }
 
@@ -84,11 +84,15 @@ namespace GreenBay.Controllers
                 ResponseItemObjectDto response = _storeService.CreateItem(newItem, user);
                 if (response.StatusCode == 200)
                 {
-                    return StatusCode(response.StatusCode, response.ItemInfo);
+                    return StatusCode(response.StatusCode, new
+                    {
+                        status = response.Message,
+                        item = response.ItemInfo
+                    });
                 }
-                return StatusCode(response.StatusCode, response.Message);
+                return StatusCode(response.StatusCode, new { error = response.Message });
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpPost("bid")]
@@ -98,10 +102,17 @@ namespace GreenBay.Controllers
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                ResponseObject response = _buyService.Bid(item, user);
-                return StatusCode(response.StatusCode, response.Message);
+                ResponseItemObjectDto response = _buyService.Bid(item, user);
+                if (response.StatusCode == 200)
+                {
+                    return StatusCode(response.StatusCode, new { status = response.Message,
+                    item_info = response.ItemInfo
+                    });
+                }
+                return StatusCode(response.StatusCode, new { error = response.Message,
+                item = response.ItemInfo});
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpPost("sell-withdraw")] //withdraw after 7 days,  sell anytime
@@ -112,9 +123,13 @@ namespace GreenBay.Controllers
             {
                 User user = _securityService.DecodeUser(identity);
                 ResponseObject response = _buyService.SellOrWithdraw(itemAction, user);
-                return StatusCode(response.StatusCode, response.Message);
+                if (response.StatusCode == 200)
+                {
+                    return StatusCode(response.StatusCode, new { status = response.Message });
+                }
+                return StatusCode(response.StatusCode, new { error = response.Message });
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpPost("buy-withdraw")] // after 10 days - buy for at least half price
@@ -125,9 +140,13 @@ namespace GreenBay.Controllers
             {
                 User user = _securityService.DecodeUser(identity);
                 ResponseObject response = _buyService.BuyOrWithdraw(itemAction, user);
-                return StatusCode(response.StatusCode, response.Message);
+                if (response.StatusCode == 200)
+                {
+                    return StatusCode(response.StatusCode, new { status = response.Message });
+                }
+                return StatusCode(response.StatusCode, new { error = response.Message });
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
     }
 }

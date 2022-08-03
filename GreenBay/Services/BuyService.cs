@@ -1,5 +1,6 @@
 ﻿using GreenBay.Context;
 using GreenBay.Models;
+using GreenBay.Models.DTOs;
 using System.Linq;
 
 namespace GreenBay.Services
@@ -7,51 +8,57 @@ namespace GreenBay.Services
     public class BuyService : IBuyService
     {
         private readonly ApplicationContext _db;
+        private readonly ISellService _sellService;
 
-        public BuyService(ApplicationContext db)
+        public BuyService(ApplicationContext db, ISellService sellService)
         {
             _db = db;
+            _sellService = sellService;
         }
 
-        public ResponseObject Bid(ItemBid item, User user)
+        public ResponseItemObjectDto Bid(ItemBid item, User user)
         {
             if (item == null)
             {
-                return new ResponseObject(400, "Not valid input object");
+                return new ResponseItemObjectDto(400, "Not valid input object");
             }
             if (item.ItemId < 1)
             {
-                return new ResponseObject(400, $"Id:{item.ItemId} of item is not valid");
+                return new ResponseItemObjectDto(400, $"Id:{item.ItemId} of item is not valid");
             }
             Item itemToBid = _db.Items.FirstOrDefault(i => i.Id.Equals(item.ItemId));
             if (itemToBid == null)
             {
-                return new ResponseObject(404, $"Item with id:{item.ItemId} is not in database");
+                return new ResponseItemObjectDto(404, $"Item with id:{item.ItemId} is not in database");
             } 
             if (itemToBid.UserId.Equals(user.Id))
             {
-                return new ResponseObject(409, $"{user.Name}, you can not buy your own product!");
+                return new ResponseItemObjectDto(409, $"{user.Name}, you can not buy your own product!"
+                    , _sellService.GenerateItemInfo(itemToBid));
             }
             if (itemToBid.BoughtById > 0)
             {
                 string boughtBy = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.BoughtById)).Name;
-                return new ResponseObject(404, $"Item with id:{item.ItemId} is already bought by {boughtBy}.");
+                return new ResponseItemObjectDto(404, $"Item with id:{item.ItemId} is already bought by {boughtBy}."
+                    , _sellService.GenerateItemInfo(itemToBid));
             }
             if (itemToBid.Bid >= item.Bid)
             {
-                return new ResponseObject(400, $"Actual bid: {itemToBid.Bid} of product {itemToBid.Name} " +
-                    $"is higher or equal as yours: {item.Bid}, you must higher your bid. Full price is {itemToBid.Price}.");
+                return new ResponseItemObjectDto(400, $"Actual bid: {itemToBid.Bid} of product {itemToBid.Name} " +
+                    $"is higher or equal as yours: {item.Bid}, you must higher your bid. Full price is {itemToBid.Price}."
+                    , _sellService.GenerateItemInfo(itemToBid));
             }
             user = _db.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
             if (user == null)
             {
-                return new ResponseObject(404, "User is not in database");
+                return new ResponseItemObjectDto(404, "User is not in database");
             }
             if (itemToBid.BidById.Equals(user.Id))
             { 
                 if(user.Dollars < item.Bid - itemToBid.Bid)
                 {
-                    return new ResponseObject(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid - itemToBid.Bid} is needed.");
+                    return new ResponseItemObjectDto(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid - itemToBid.Bid} is needed."
+                        , _sellService.GenerateItemInfo(itemToBid));
                 }
                 else
                 {
@@ -63,12 +70,14 @@ namespace GreenBay.Services
                         User giveMoneyForSellToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.UserId));
                         giveMoneyForSellToUser.Dollars += itemToBid.Bid;
                         _db.SaveChanges();
-                        return new ResponseObject(200, $"You have bought item {itemToBid.Name} for {itemToBid.Bid} dollars.");
+                        return new ResponseItemObjectDto(200, $"You have bought item {itemToBid.Name} for {itemToBid.Bid} dollars."
+                            ,_sellService.GenerateItemInfo(itemToBid));
                     }
                     else
                     {
                         _db.SaveChanges();
-                        return new ResponseObject(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars.");
+                        return new ResponseItemObjectDto(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
+                            , _sellService.GenerateItemInfo(itemToBid));
                     }
                 }
             }
@@ -76,7 +85,8 @@ namespace GreenBay.Services
             {
                 if (user.Dollars < item.Bid)
                 {
-                    return new ResponseObject(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid} is needed.");
+                    return new ResponseItemObjectDto(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid} is needed."
+                        , _sellService.GenerateItemInfo(itemToBid));
                 }
                 if (itemToBid.Bid > 0)
                 {
@@ -92,12 +102,14 @@ namespace GreenBay.Services
                     User giveMoneyForSellToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.UserId));
                     giveMoneyForSellToUser.Dollars += itemToBid.Bid;
                     _db.SaveChanges();
-                    return new ResponseObject(200, $"You have bought product {itemToBid.Name} for {itemToBid.Bid} dollars.");
+                    return new ResponseItemObjectDto(200, $"You have bought product {itemToBid.Name} for {itemToBid.Bid} dollars."
+                        , _sellService.GenerateItemInfo(itemToBid));
                 }
                 else
                 {
                     _db.SaveChanges();
-                    return new ResponseObject(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars.");
+                    return new ResponseItemObjectDto(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
+                        , _sellService.GenerateItemInfo(itemToBid));
                 }
             }
         }

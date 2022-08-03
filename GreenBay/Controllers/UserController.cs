@@ -35,7 +35,7 @@ namespace GreenBay.Controllers
             {
                 return StatusCode(response.StatusCode, response.ResponseLoginObjectOutput);
             }
-            return StatusCode(response.StatusCode, response.Message);
+            return StatusCode(response.StatusCode, new { error = response.Message });
         }
 
         [AllowAnonymous]
@@ -47,9 +47,9 @@ namespace GreenBay.Controllers
             {
                 User user = _storeService.CreateUser(userCreate);
                 var token = _securityService.GenerateToken(user);
-                return StatusCode(200,token);
+                return StatusCode(200,new { status = $"New user {user.Name} created", token = token });
             }
-            return StatusCode(response.StatusCode, response.Message);
+            return StatusCode(response.StatusCode, new { error = response.Message });
         }
         
         [HttpGet("show")]
@@ -68,9 +68,9 @@ namespace GreenBay.Controllers
             if (user != null)
             {
                 ResponseObject response = _storeService.ManageMoney(dollars, user.Id);
-                return StatusCode(response.StatusCode,response.Message);
+                return StatusCode(response.StatusCode,new { status = response.Message });
             }
-            return Unauthorized("Not valid token");
+            return Unauthorized(new { error = "Not valid token" });
         }
 
         [HttpGet("info")]
@@ -82,7 +82,7 @@ namespace GreenBay.Controllers
             {
                 return Ok(_sellService.UserInfoDetailed(user.Id));
             }
-            return NotFound("User not found.");
+            return NotFound(new { error = "User not found." });
         }
     }
 }

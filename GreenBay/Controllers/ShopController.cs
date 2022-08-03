@@ -82,7 +82,7 @@ namespace GreenBay.Controllers
             {
                 User user = _securityService.DecodeUser(identity);
                 ResponseItemObjectDto response = _storeService.CreateItem(newItem, user);
-                if (response.StatusCode == 200)
+                if (response.StatusCode == 201)
                 {
                     return StatusCode(response.StatusCode, new
                     {

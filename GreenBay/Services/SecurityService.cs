@@ -81,7 +81,7 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(409, $"User with name {userCreate.UserName} already exists.");
             }
-            return new ResponseObject(200, $"User {userCreate.UserName} has been created.");
+            return new ResponseObject(201, $"User {userCreate.UserName} has been created.");
         }
 
         private bool EmailIsValid(string email)

@@ -72,7 +72,7 @@ namespace GreenBay.Services
             _db.SaveChanges();
             Item item = _db.Items.FirstOrDefault(x => x.Name == itemNew.Name);
 
-            return new ResponseItemObjectDto(200, "New item has been created", _sellService.GenerateItemInfo(item));
+            return new ResponseItemObjectDto(201, "New item has been created", _sellService.GenerateItemInfo(item));
         }
 
         public ResponseObject ManageMoney(DollarsManage dollars, int id)

@@ -29,7 +29,7 @@ namespace GreenBay.Services
             int dollars = _db.Users.FirstOrDefault(u => u.Id.Equals(id)).Dollars;
             List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
             
-            return items.Where(i => i.BoughtById.Equals(0) && i.HighestBid < dollars && i.SellingById != id)
+            return items.Where(i => i.BoughtById.Equals(0) && i.HighestBid + 1 < dollars && i.SellingById != id)
                 .OrderByDescending(u => u.Id).Skip((page - 1) * itemCount)
                 .Take(itemCount).ToList();
         }
@@ -74,12 +74,14 @@ namespace GreenBay.Services
         public UserInfoFullDto UserInfoDetailed(int id)
         {
             User user = _db.Users.FirstOrDefault(u => u.Id == id);
+            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
             if (user == null) return null;
             return new UserInfoFullDto(user.Id, user.Name, user.Password,user.Email, user.Dollars
                 , user.Role, user.CreatedAt
-                , ListAllItems(1, Int32.MaxValue).Where(i => i.BoughtById > 0 && i.SellingById.Equals(user.Id)).ToList()
-                , ListAllItems(1, Int32.MaxValue).Where(i => i.BoughtById.Equals(user.Id)).ToList()
-                , ListAllItems(1, Int32.MaxValue).Where(i => i.BoughtById == 0 && i.HighestBidById.Equals(user.Id)).ToList()
+                , items.Where(i => i.BoughtById > 0 && i.SellingById.Equals(user.Id)).ToList()
+                , items.Where(i => i.BoughtById.Equals(user.Id)).ToList()
+                , items.Where(i => i.BoughtById == 0 && i.HighestBidById.Equals(user.Id)).ToList()
+                , items.Where(i => i.BoughtById == 0 && i.SellingById.Equals(user.Id)).ToList()
                 );
         }
 

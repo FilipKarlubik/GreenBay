@@ -43,11 +43,11 @@ namespace GreenBay.Controllers
         public ActionResult Create([FromBody] UserCreate userCreate)
         {
             ResponseObject response = _securityService.CheckDuplicity(userCreate);
-            if (response.StatusCode == 200)
+            if (response.StatusCode == 201)
             {
                 User user = _storeService.CreateUser(userCreate);
                 var token = _securityService.GenerateToken(user);
-                return StatusCode(200,new { status = $"New user {user.Name} created", token = token });
+                return StatusCode(response.StatusCode,new { status = response.Message, token = token });
             }
             return StatusCode(response.StatusCode, new { error = response.Message });
         }

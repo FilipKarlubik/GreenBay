@@ -15,8 +15,9 @@ namespace GreenBay.Models.DTOs
         public List<ItemInfoDto> ItemsSold { get; }
         public List<ItemInfoDto> ItemsBought { get; }
         public List<ItemInfoDto> ItemsTryingToBuy { get; }
+        public List<ItemInfoDto> ItemsTryingToSell { get; }
        
-        public UserInfoFullDto(int id, string userName, string password, string email, int dollars, string role, DateTime createdAt, List<ItemInfoDto> itemsSold, List<ItemInfoDto> itemsBought, List<ItemInfoDto> itemsTryingToBuy)
+        public UserInfoFullDto(int id, string userName, string password, string email, int dollars, string role, DateTime createdAt, List<ItemInfoDto> itemsSold, List<ItemInfoDto> itemsBought, List<ItemInfoDto> itemsTryingToBuy, List<ItemInfoDto> itemsTryingToSell)
         {
             Id = id;
             UserName = userName;
@@ -28,6 +29,7 @@ namespace GreenBay.Models.DTOs
             ItemsSold = itemsSold;
             ItemsBought = itemsBought;
             ItemsTryingToBuy = itemsTryingToBuy;
+            ItemsTryingToSell = itemsTryingToSell;
         }
     }
 }

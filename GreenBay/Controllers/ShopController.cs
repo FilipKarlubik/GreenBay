@@ -1,4 +1,5 @@
 ﻿using GreenBay.Models;
+using GreenBay.Models.DTOs;
 using GreenBay.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,39 +27,51 @@ namespace GreenBay.Controllers
 
         [HttpGet("list")]
         [Authorize(Roles ="admin")]
-        public ActionResult ListAllProducts()
+        public ActionResult ListAllProducts(int page, int itemCount)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity); 
-                return Ok(_sellService.ListAllItems());
+                return Ok(_sellService.ListAllItems(page, itemCount));
             }
             return Unauthorized("Not valid token");
         }
 
         [HttpGet("list/buyable")]
-        public ActionResult ListAllBuyableProducts()
+        public ActionResult ListAllBuyableProducts(int page, int itemCount)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok(_sellService.ListAllBuyableItems(user.Id));
+                return Ok(_sellService.ListAllBuyableItems(user.Id, page, itemCount));
             }
             return Unauthorized("Not valid token");
         }
 
         [HttpGet("list/sellable")]
-        public ActionResult ListAllSellableProducts()
+        public ActionResult ListAllSellableProducts(int page, int itemCount)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok(_sellService.ListAllSellableItems(user.Id));
+                return Ok(_sellService.ListAllSellableItems(user.Id, page, itemCount));
             }
             return Unauthorized("Not valid token");
+        }
+
+        [HttpGet("item")]
+        public ActionResult ItemInfo(int id)
+        {
+            ResponseItemObjectDto response = _sellService.ItemInfo(id);       
+            if (response.StatusCode == 200)
+            {
+                return StatusCode(response.StatusCode, response.ItemInfo);
+            }
+            return StatusCode(response.StatusCode, response.Message);
+
         }
 
         [HttpPost("create")]
@@ -68,7 +81,11 @@ namespace GreenBay.Controllers
             if (identity != null)
             {
                 User user = _securityService.DecodeUser(identity);
-                ResponseObject response = _storeService.CreateItem(newItem, user);
+                ResponseItemObjectDto response = _storeService.CreateItem(newItem, user);
+                if (response.StatusCode == 200)
+                {
+                    return StatusCode(response.StatusCode, response.ItemInfo);
+                }
                 return StatusCode(response.StatusCode, response.Message);
             }
             return Unauthorized("Not valid token");

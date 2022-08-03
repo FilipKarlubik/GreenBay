@@ -8,9 +8,9 @@ namespace GreenBay.Services
     public interface ISecurityService
     {
         string GenerateToken(User user);
-        ResponseObject Authenticate(UserLogin userLogin);
+        ResponseLoginObjectDto Authenticate(UserLogin userLogin);
         ResponseObject CheckDuplicity(UserCreate userCreate);
         User DecodeUser(ClaimsIdentity claims);
-        List<UserInfoDto> ListAllUsers();
+        List<UserInfoDto> ListAllUsers(int page, int itemCount);
     }
 }

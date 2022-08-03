@@ -1,15 +1,20 @@
 ﻿using GreenBay.Context;
 using GreenBay.Models;
+using GreenBay.Models.DTOs;
+using System;
+using System.Linq;
 
 namespace GreenBay.Services
 {
     public class StoreService : IStoreService
     {
         private readonly ApplicationContext _db;
+        private readonly ISellService _sellService;
 
-        public StoreService(ApplicationContext db)
+        public StoreService(ApplicationContext db, ISellService sellService)
         {
             _db = db;
+            _sellService = sellService;
         }
 
 
@@ -27,8 +32,35 @@ namespace GreenBay.Services
             return user;
         }
 
-        public ResponseObject CreateItem(ItemCreate itemNew, User user)
+        public ResponseItemObjectDto CreateItem(ItemCreate itemNew, User user)
         {
+            if (!_db.Users.Any(u => u.Id.Equals(user.Id)))
+            {
+                return new ResponseItemObjectDto(404, $"User with Name: {user.Name} is not in database.");
+            }
+            if (itemNew.Name == null || itemNew.Name == string.Empty)
+            {
+                return new ResponseItemObjectDto(400, "Not valid name.");
+            }
+            if (itemNew.Price < 1)
+            {
+                return new ResponseItemObjectDto(400, $"Not valid price :{itemNew.Price}.");
+            }
+            if (itemNew.Description == null || itemNew.Description == string.Empty)
+            {
+                return new ResponseItemObjectDto(400, "Not valid description.");
+            }
+            Uri uriResult;
+            bool validUrl = Uri.TryCreate(itemNew.ImageUrl, UriKind.Absolute, out uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            if (validUrl == false)
+            {
+                return new ResponseItemObjectDto(400, "Not valid image Url.");
+            }
+            if (_db.Items.Any(i => i.Name.Equals(itemNew.Name)))
+            {
+                return new ResponseItemObjectDto(409, $"Item with name {itemNew.Name} already exists.");
+            }
             _db.Items.Add(new Item()
             {
                 Name = itemNew.Name,
@@ -37,8 +69,10 @@ namespace GreenBay.Services
                 ImageUrl = itemNew.ImageUrl,
                 UserId = user.Id
             });
-            _db.SaveChanges();   
-            return new ResponseObject(200, $"New item {itemNew.Name} has been created, selling by {user.Name}");
+            _db.SaveChanges();
+            Item item = _db.Items.FirstOrDefault(x => x.Name == itemNew.Name);
+
+            return new ResponseItemObjectDto(200, "New item has been created", _sellService.GenerateItemInfo(item));
         }
 
         public ResponseObject ManageMoney(DollarsManage dollars, int id)

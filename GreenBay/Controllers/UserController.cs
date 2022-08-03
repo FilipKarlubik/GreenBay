@@ -1,4 +1,5 @@
 ﻿using GreenBay.Models;
+using GreenBay.Models.DTOs;
 using GreenBay.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,12 +26,15 @@ namespace GreenBay.Controllers
             _sellService = sellService;
         }
 
-
         [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult Login([FromBody] UserLogin userLogin)
         {
-            ResponseObject response = _securityService.Authenticate(userLogin);    
+            ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);
+            if (response.StatusCode == 200)
+            {
+                return StatusCode(response.StatusCode, response.ResponseLoginObjectOutput);
+            }
             return StatusCode(response.StatusCode, response.Message);
         }
 
@@ -51,9 +55,9 @@ namespace GreenBay.Controllers
         [HttpGet("show")]
         [AllowAnonymous]
         [Authorize(Roles ="admin")]
-        public ActionResult ShowAllUsers()
+        public ActionResult ShowAllUsers(int page, int itemCount)
         {           
-            return Ok(_securityService.ListAllUsers());
+            return Ok(_securityService.ListAllUsers(page, itemCount));
         }
 
         [HttpPost("money")]

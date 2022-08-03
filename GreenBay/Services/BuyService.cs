@@ -39,7 +39,8 @@ namespace GreenBay.Services
             }
             if (itemToBid.Bid >= item.Bid)
             {
-                return new ResponseObject(400, $"Actual bid {itemToBid.Bid} is higher or equal as yours, you must higher your bid.");
+                return new ResponseObject(400, $"Actual bid: {itemToBid.Bid} of product {itemToBid.Name} " +
+                    $"is higher or equal as yours: {item.Bid}, you must higher your bid. Full price is {itemToBid.Price}.");
             }
             user = _db.Users.FirstOrDefault(u => u.Id.Equals(user.Id));
             if (user == null)
@@ -50,7 +51,7 @@ namespace GreenBay.Services
             { 
                 if(user.Dollars < item.Bid - itemToBid.Bid)
                 {
-                    return new ResponseObject(404, "You have not enough money to rise the bid");
+                    return new ResponseObject(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid - itemToBid.Bid} is needed.");
                 }
                 else
                 {
@@ -73,7 +74,11 @@ namespace GreenBay.Services
             }
             else
             {
-                if(itemToBid.Bid > 0)
+                if (user.Dollars < item.Bid)
+                {
+                    return new ResponseObject(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid} is needed.");
+                }
+                if (itemToBid.Bid > 0)
                 {
                     User giveMoneyBackToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.BidById));
                     giveMoneyBackToUser.Dollars += itemToBid.Bid;     
@@ -183,7 +188,7 @@ namespace GreenBay.Services
             }
             if (item.CreatedAt.AddDays(10) > System.DateTime.Now)
             {
-                return new ResponseObject(409, $"{user.Name}, you can not perform action on this item before 10 days from advertising : {item.CreatedAt.AddDays(10)}");
+                return new ResponseObject(409, $"{user.Name}, you can not perform buy/withdraw action on this item before 10 days from advertising : {item.CreatedAt.AddDays(10)}");
             }
             if (itemAction.Action == "buy")
             {

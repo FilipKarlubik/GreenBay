@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 
@@ -23,24 +24,30 @@ namespace GreenBay.Services
             _config = configuration;
         }
 
-        public ResponseObject Authenticate(UserLogin userLogin)
+        public ResponseLoginObjectDto Authenticate(UserLogin userLogin)
         {
             if (userLogin.UserName == null || userLogin.UserName == "")
             {
-                return new ResponseObject(400, "Not valid username.");
+                return new ResponseLoginObjectDto(400, "Not valid username.");
             }
             if (userLogin.Password == null || userLogin.Password == "")
             {
-                return new ResponseObject(400, "Not valid password.");
+                return new ResponseLoginObjectDto(400, "Not valid password.");
             }
-            User currentUser = _db.Users.FirstOrDefault(u => u.Name.ToLower().Equals(userLogin.UserName.ToLower())
-            && u.Password.Equals(userLogin.Password));
+            User currentUser = _db.Users.FirstOrDefault(u => u.Name.ToLower().Equals(userLogin.UserName.ToLower()));
             if  (currentUser == null)
             {
-                return new ResponseObject(404, "User not found in database.");
+                return new ResponseLoginObjectDto(404, $"User with name {userLogin.UserName} not found in database.");
             }
-            string token = GenerateToken(currentUser);
-            return new ResponseObject(200, token);
+            if(!currentUser.Password.Equals(userLogin.Password))
+            {
+                return new ResponseLoginObjectDto(409, "Given password is wrong.");
+            }
+            string token = GenerateToken(currentUser); 
+            ResponseLoginObjectOutputDto output = new ResponseLoginObjectOutputDto(
+                currentUser.Dollars, token);
+            
+            return new ResponseLoginObjectDto(200, "You have logged in.", output);
         }
 
         public ResponseObject CheckDuplicity(UserCreate userCreate)
@@ -62,11 +69,33 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "No Email adress was given.");
             }
+            if (EmailIsValid(userCreate.Email) == false)
+            {
+                return new ResponseObject(400, "No valid Email adress was given.");
+            }
+            if (userCreate.Dollars < 0)
+            {
+                return new ResponseObject(400, "No valid dollars amount was given.");
+            }
             if (_db.Users.Any(u => u.Name.ToLower().Equals(userCreate.UserName.ToLower()))) 
             {
                 return new ResponseObject(409, $"User with name {userCreate.UserName} already exists.");
             }
             return new ResponseObject(200, $"User {userCreate.UserName} has been created.");
+        }
+
+        private bool EmailIsValid(string email)
+        {
+            var valid = true;
+            try
+            {
+                var emailAddress = new MailAddress(email);
+            }
+            catch
+            {
+                valid = false;
+            }
+            return valid;
         }
 
         public User DecodeUser(ClaimsIdentity identity)
@@ -101,10 +130,19 @@ namespace GreenBay.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public List<UserInfoDto> ListAllUsers()
+        public List<UserInfoDto> ListAllUsers(int page, int itemCount)
         {
+            if (itemCount < 1) itemCount = 20;
+            if (page < 1) page = 1;
+            int totalCount = _db.Users.Count();
+            if (totalCount < page * itemCount)
+            {
+                if (totalCount % itemCount == 0) page = totalCount / itemCount;
+                else page = totalCount / itemCount + 1;
+            }
+            List<User> usersInDB = _db.Users.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
             List<UserInfoDto> users = new List<UserInfoDto>();
-            foreach (User user in _db.Users.ToList())
+            foreach (User user in usersInDB)
             {
                 users.Add(new UserInfoDto( user.Id, user.Name, user.Password, user.Email
                     ,user.Dollars, user.Role, user.CreatedAt));

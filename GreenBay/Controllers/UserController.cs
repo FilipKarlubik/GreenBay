@@ -52,7 +52,7 @@ namespace GreenBay.Controllers
             return StatusCode(response.StatusCode, new { error = response.Message });
         }
         
-        [HttpGet("show")]
+        [HttpGet("show")] //list all existing users 
         [AllowAnonymous]
         [Authorize(Roles ="admin")]
         public ActionResult ShowAllUsers(int page, int itemCount)
@@ -60,7 +60,7 @@ namespace GreenBay.Controllers
             return Ok(_securityService.ListAllUsers(page, itemCount));
         }
 
-        [HttpPost("money")]
+        [HttpPost("money")] // change your money amount - add or remove money
         public ActionResult MoneyChange([FromBody] DollarsManage dollars)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -73,7 +73,7 @@ namespace GreenBay.Controllers
             return Unauthorized(new { error = "Not valid token" });
         }
 
-        [HttpGet("info")]
+        [HttpGet("info")] // logged user info
         public ActionResult UserInfo()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;

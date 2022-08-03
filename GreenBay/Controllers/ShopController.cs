@@ -25,7 +25,7 @@ namespace GreenBay.Controllers
             _buyService = buyService;
         }
 
-        [HttpGet("list")]
+        [HttpGet("list")] // all items, include already bought
         [Authorize(Roles ="admin")]
         public ActionResult ListAllProducts(int page, int itemCount)
         {
@@ -38,7 +38,7 @@ namespace GreenBay.Controllers
             return Unauthorized(new { error = "Not valid token" });
         }
 
-        [HttpGet("list/buyable")]
+        [HttpGet("list/buyable")] //not yet bought, no your own, with price lower than your money amount
         public ActionResult ListAllBuyableProducts(int page, int itemCount)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -50,7 +50,7 @@ namespace GreenBay.Controllers
             return Unauthorized(new { error = "Not valid token" });
         }
 
-        [HttpGet("list/sellable")]
+        [HttpGet("list/sellable")] //all not yet bought include your own
         public ActionResult ListAllSellableProducts(int page, int itemCount)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -62,7 +62,7 @@ namespace GreenBay.Controllers
             return Unauthorized(new { error = "Not valid token" });
         }
 
-        [HttpGet("item")]
+        [HttpGet("item")] // info about one item with it specified in pathvar 
         public ActionResult ItemInfo(int id)
         {
             ResponseItemObjectDto response = _sellService.ItemInfo(id);       

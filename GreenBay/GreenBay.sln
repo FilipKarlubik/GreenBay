@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenBay", "GreenBay.csproj", "{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenBay", "GreenBay.csproj", "{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenBay.Tests", "..\GreenBay.Tests\GreenBay.Tests.csproj", "{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

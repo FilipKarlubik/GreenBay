@@ -57,7 +57,7 @@ namespace GreenBay.Services
             { 
                 if(user.Dollars < item.Bid - itemToBid.Bid)
                 {
-                    return new ResponseItemObjectDto(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid - itemToBid.Bid} is needed."
+                    return new ResponseItemObjectDto(404, $"{user.Name} you have not enough money: {user.Dollars} to rise the bid: {item.Bid - itemToBid.Bid} is needed."
                         , _sellService.GenerateItemInfo(itemToBid));
                 }
                 else
@@ -70,13 +70,13 @@ namespace GreenBay.Services
                         User giveMoneyForSellToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.UserId));
                         giveMoneyForSellToUser.Dollars += itemToBid.Bid;
                         _db.SaveChanges();
-                        return new ResponseItemObjectDto(200, $"You have bought item {itemToBid.Name} for {itemToBid.Bid} dollars."
+                        return new ResponseItemObjectDto(200, $"{user.Name}, you have bought item {itemToBid.Name} for {itemToBid.Bid} dollars."
                             ,_sellService.GenerateItemInfo(itemToBid));
                     }
                     else
                     {
                         _db.SaveChanges();
-                        return new ResponseItemObjectDto(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
+                        return new ResponseItemObjectDto(200, $"{user.Name}, you have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
                             , _sellService.GenerateItemInfo(itemToBid));
                     }
                 }
@@ -85,7 +85,7 @@ namespace GreenBay.Services
             {
                 if (user.Dollars < item.Bid)
                 {
-                    return new ResponseItemObjectDto(404, $"You have not enough money: {user.Dollars} to rise the bid: {item.Bid} is needed."
+                    return new ResponseItemObjectDto(404, $"{user.Name}, you have not enough money: {user.Dollars} to rise the bid: {item.Bid} is needed."
                         , _sellService.GenerateItemInfo(itemToBid));
                 }
                 if (itemToBid.Bid > 0)
@@ -102,13 +102,13 @@ namespace GreenBay.Services
                     User giveMoneyForSellToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.UserId));
                     giveMoneyForSellToUser.Dollars += itemToBid.Bid;
                     _db.SaveChanges();
-                    return new ResponseItemObjectDto(200, $"You have bought product {itemToBid.Name} for {itemToBid.Bid} dollars."
+                    return new ResponseItemObjectDto(200, $"{user.Name}, you have bought product {itemToBid.Name} for {itemToBid.Bid} dollars."
                         , _sellService.GenerateItemInfo(itemToBid));
                 }
                 else
                 {
                     _db.SaveChanges();
-                    return new ResponseItemObjectDto(200, $"You have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
+                    return new ResponseItemObjectDto(200, $"{user.Name}, you have risen the bit of item {itemToBid.Name} to {itemToBid.Bid} dollars."
                         , _sellService.GenerateItemInfo(itemToBid));
                 }
             }
@@ -206,7 +206,7 @@ namespace GreenBay.Services
             {
                 if (item.Bid < item.Price / 2)
                 {
-                    return new ResponseObject(409, $"{user.Name}, your bit on the product {item.Name} is less then half ({item.Bid}) of the price ({item.Price}). ");
+                    return new ResponseObject(409, $"{user.Name}, your bit on the product {item.Name} is less then half ({item.Bid}) of the price ({item.Price}). You can not buy it. ");
                 }
                 else
                 {

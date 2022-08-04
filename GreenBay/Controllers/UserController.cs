@@ -1,12 +1,14 @@
 ﻿using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using GreenBay.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace GreenBay.Controllers
 {
@@ -74,13 +76,14 @@ namespace GreenBay.Controllers
         }
 
         [HttpGet("info")] // logged user info
-        public ActionResult UserInfo()
+        public async Task<ActionResult> UserInfoAsync()
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
+            string token = await HttpContext.GetTokenAsync("access_token");
             User user = _securityService.DecodeUser(identity);
             if (user != null)
             {
-                return Ok(_sellService.UserInfoDetailed(user.Id));
+                return Ok(_sellService.UserInfoDetailed(user.Id, token));
             }
             return NotFound(new { error = "User not found." });
         }

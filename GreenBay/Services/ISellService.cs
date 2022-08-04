@@ -9,7 +9,7 @@ namespace GreenBay.Services
         List<ItemInfoDto> ListAllItems(int page, int itemCount);
         List<ItemInfoDto> ListAllBuyableItems(int id, int page, int itemCount);
         List<ItemInfoDto> ListAllSellableItems(int id, int page, int itemCount);
-        UserInfoFullDto UserInfoDetailed(int id);
+        UserInfoFullDto UserInfoDetailed(int id, string token);
         ResponseItemObjectDto ItemInfo(int id);
         ItemInfoDto GenerateItemInfo(Item item);
     }

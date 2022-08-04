@@ -71,7 +71,7 @@ namespace GreenBay.Services
             return items;
         }
 
-        public UserInfoFullDto UserInfoDetailed(int id)
+        public UserInfoFullDto UserInfoDetailed(int id, string token)
         {
             User user = _db.Users.FirstOrDefault(u => u.Id == id);
             List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
@@ -82,7 +82,7 @@ namespace GreenBay.Services
                 , items.Where(i => i.BoughtById.Equals(user.Id)).ToList()
                 , items.Where(i => i.BoughtById == 0 && i.HighestBidById.Equals(user.Id)).ToList()
                 , items.Where(i => i.BoughtById == 0 && i.SellingById.Equals(user.Id)).ToList()
-                );
+                , token);
         }
 
         public ResponseItemObjectDto ItemInfo(int id)

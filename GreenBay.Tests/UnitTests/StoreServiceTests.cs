@@ -10,6 +10,8 @@ using Xunit;
 
 namespace GreenBay.Tests.UnitTests
 {
+    [Serializable]
+    [Collection("Serialize")]
     public class StoreServiceTests : IDisposable
     {
         private readonly IStoreService storeService;

@@ -96,8 +96,7 @@ namespace GreenBay.Services
             {
                 return new ResponseItemObjectDto(404, $"Item Id:{id} not in database.");
             }
-            
-            return new ResponseItemObjectDto(200, "New item was created", GenerateItemInfo(item));
+            return new ResponseItemObjectDto(200, $"Item with Id:{id} has been found.", GenerateItemInfo(item));
         }
 
         public ItemInfoDto GenerateItemInfo(Item item)

@@ -1,0 +1,31 @@
+name: Build & Test
+
+on:
+   push:
+    branches: [ "master" ]
+   pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 3.1.x
+    - name: Restore dependencies
+      run: dotnet restore ./GreenBay/GreenBay.sln
+    - name: Build
+      run: dotnet build --no-restore ./GreenBay/GreenBay.sln
+    - name: Test
+      env:
+         TokenGenerationKey: ${{ secrets.TokenGenerationKey }}
+         TribesGametickLength: ${{ secrets.TribesGametickLength }}
+         MailServicePassword: ${{ secrets.MailServicePassword }}
+         TwoStepSecret: ${{ secrets.TwoStepSecret }}
+         DistanceMultiplier: ${{ secrets.DistanceMultiplier }}
+         AzureUser: ${{ secrets.azureuser }}
+         AzureSqlPassword: ${{ secrets.AZURESQLPASSWORD }}
+      run: dotnet test --no-build --verbosity minimal ./GreenBay/

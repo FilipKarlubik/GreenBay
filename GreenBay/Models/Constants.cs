@@ -7,7 +7,7 @@ namespace GreenBay.Models
     {
         public static List<User> Users = new List<User>()
         { 
-            new User() {Name = "Filip", Email = "filip.krlubik@gmail.com", Password = "f", Role = "admin", Dollars = 1000},
+            new User() {Name = "Filip", Email = "filip.karlubik@gmail.com", Password = "f", Role = "admin", Dollars = 1000},
             new User() {Name = "Tom", Email = "thomas@gmail.com", Password = "t", Role = "user", Dollars = 100},
             new User() {Name = "Jerry", Email = "mouse@gmail.com", Password = "j", Role = "user", Dollars = 3000},
             new User() {Name = "Butch", Email = "possy_cat@gmail.com", Password = "b", Role = "user", Dollars = 50}

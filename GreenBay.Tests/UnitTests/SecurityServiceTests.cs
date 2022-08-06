@@ -22,7 +22,7 @@ namespace GreenBay.Tests.UnitTests
         private readonly ApplicationContext context;
         private readonly ISecurityService securityService;
         private readonly static DbContextOptions options = new DbContextOptionsBuilder<ApplicationContext>()
-               .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=Test;Trusted_Connection=True;MultipleActiveResultSets=true").Options;
+               .UseInMemoryDatabase("test").Options;
 
         public SecurityServiceTests()
         {

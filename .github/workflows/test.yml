@@ -16,9 +16,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore ./Eucyon-Tribes/Eucyon-Tribes.sln
+      run: dotnet restore ./GreenBay/GreenBay.sln
     - name: Build
-      run: dotnet build --no-restore ./Eucyon-Tribes/Eucyon-Tribes.sln
+      run: dotnet build --no-restore ./GreenBay/GreenBay.sln
     - name: Test
       env:
          TokenGenerationKey: ${{ secrets.TokenGenerationKey }}
@@ -28,4 +28,4 @@ jobs:
          DistanceMultiplier: ${{ secrets.DistanceMultiplier }}
          AzureUser: ${{ secrets.azureuser }}
          AzureSqlPassword: ${{ secrets.AZURESQLPASSWORD }}
-      run: dotnet test --no-build --verbosity minimal ./Eucyon-Tribes/
+      run: dotnet test --no-build --verbosity minimal ./GreenBay/

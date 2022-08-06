@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using Xunit;
 
@@ -91,6 +94,25 @@ namespace GreenBay.Tests.UnitTests
             Assert.Equal(expectedMessage, result.Message);
         }
 
+        [Fact]
+        public void GenerateToken_ValidUserSchouldWork()
+        {
+            //Arrange
+            User user = context.Users.First();
 
+            //Act
+            string tokenString = securityService.GenerateToken(user);
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+            var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+            //Assert
+            Assert.NotNull(token);
+            Assert.Equal("filip.karlubik@gmail.com", email);
+        }
+
+        [Fact]
+        public void ListAllUsers_ShouldWorkOneUSerInDB()
+        { 
+            Assert.Single(securityService.ListAllUsers(1,10));
+        }
     }
 }

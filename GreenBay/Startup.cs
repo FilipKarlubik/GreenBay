@@ -29,7 +29,9 @@ namespace GreenBay
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            if (env.Equals("Development"))
+                services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
                  {
@@ -52,6 +54,7 @@ namespace GreenBay
             services.AddTransient<IStoreService, StoreService>();
             services.AddTransient<ISellService, SellService>();
             services.AddTransient<IBuyService, BuyService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +63,7 @@ namespace GreenBay
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
             }
             else
             {

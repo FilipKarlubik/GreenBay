@@ -17,7 +17,7 @@ namespace GreenBay.Tests.UnitTests
         private readonly IStoreService storeService;
         private readonly ISellService sellService;
         private readonly static DbContextOptions options = new DbContextOptionsBuilder<ApplicationContext>()
-                .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=Test;Trusted_Connection=True;MultipleActiveResultSets=true").Options;
+                .UseInMemoryDatabase("test").Options;
         private readonly ApplicationContext context;
         public StoreServiceTests()
         {

@@ -56,8 +56,8 @@ namespace GreenBay.Tests.IntegrationTests
             var body = response.Content.ReadAsStringAsync().Result;
             var result = JsonSerializer.Deserialize<Dictionary<string, object>>(body);
 
-            //Assert.Equal(200, (int)response.StatusCode);
-            Assert.Equal("Filip, you have bought product Cheese for 10 dollars.", result["error"].ToString());
+            Assert.Equal(200, (int)response.StatusCode);
+            Assert.Equal("Filip, you have bought product Cheese for 10 dollars.", result["status"].ToString());
         }
     }
 }

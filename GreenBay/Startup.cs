@@ -32,6 +32,8 @@ namespace GreenBay
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
             if (env.Equals("Development"))
                 services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            if (env.Equals("Production"))
+                services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
                  {

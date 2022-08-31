@@ -35,7 +35,7 @@ namespace GreenBay.Tests.IntegrationTests
                         var scopedServices = scope.ServiceProvider;
                         var appDb = scopedServices.GetRequiredService<ApplicationContext>();
                         //appDb.Database.EnsureDeleted();
-                        appDb.Database.EnsureCreated();
+                        //appDb.Database.EnsureCreated();
                         if (appDb.Users.Count() == 0)
                         {
                             appDb.Users.AddRange(Constants.Users);

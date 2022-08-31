@@ -73,6 +73,10 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "No valid Email adress was given.");
             }
+            if (_db.Users.Any(u => u.Email.Equals(userCreate.Email)))
+            {
+                return new ResponseObject(409, $"User with email {userCreate.Email} already exists.");
+            }
             if (userCreate.Dollars < 0)
             {
                 return new ResponseObject(400, "No valid dollars amount was given.");

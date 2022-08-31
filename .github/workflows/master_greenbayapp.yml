@@ -54,4 +54,4 @@ jobs:
           app-name: 'GreenBayApp'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E3D008FFD0D146EEAA53CBD0233CAA23 }}
-          package: .
+          package: ./GreenBay

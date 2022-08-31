@@ -22,7 +22,7 @@ namespace GreenBay.Tests.UnitTests
         private readonly ApplicationContext context;
         private readonly ISecurityService securityService;
         private readonly static DbContextOptions options = new DbContextOptionsBuilder<ApplicationContext>()
-               .UseInMemoryDatabase("test").Options;
+               .UseInMemoryDatabase("SecurityServiceTestDB").Options;
 
         public SecurityServiceTests()
         {

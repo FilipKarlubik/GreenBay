@@ -56,7 +56,7 @@ namespace GreenBay.Tests.UnitTests
         [InlineData(2, 1, 200, "Filip, you have risen the bit of item Cheese to 1 dollars.")]
         [InlineData(0, 1, 400, "Id:0 of item is not valid")]
         [InlineData(2, 1, 400, "Actual bid: 1 of product Cheese is higher or equal as yours: 1, you must higher your bid. Full price is 7.")]
-        //[InlineData(2, 7, 200, "Filip, you have bought item Cheese for 7 dollars.")]
+        [InlineData(2, 3, 200, "Filip, you have risen the bit of item Cheese to 3 dollars.")]
         public void Bid_WithVariousParams(int itemIdid, int bid, int expectedStatusCode, string expectedMessage)
         {
             User user = context.Users.First(u => u.Name.Equals("Filip"));

@@ -13,12 +13,12 @@ namespace GreenBay.Tests.IntegrationTests
     public class HTTPClientFactory
     {
         protected readonly HttpClient _client;
-        protected readonly IConfiguration configuration;
+        //protected readonly IConfiguration configuration;
 
         protected HTTPClientFactory()
         {
-            configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
-                .Build();   
+            //configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
+             //   .Build();   
 
             var appFactory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
             {

@@ -102,7 +102,7 @@ namespace GreenBay.Services
                     User giveMoneyForSellToUser = _db.Users.FirstOrDefault(u => u.Id.Equals(itemToBid.UserId));
                     giveMoneyForSellToUser.Dollars += itemToBid.Bid;
                     _db.SaveChanges();
-                    return new ResponseItemObjectDto(200, $"{user.Name}, you have bought product {itemToBid.Name} for {itemToBid.Bid} dollars."
+                    return new ResponseItemObjectDto(200, $"{user.Name}, you have bought item {itemToBid.Name} for {itemToBid.Bid} dollars."
                         , _sellService.GenerateItemInfo(itemToBid));
                 }
                 else

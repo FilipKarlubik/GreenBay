@@ -28,6 +28,12 @@ jobs:
       - name: dotnet publish
         run: dotnet publish ./GreenBay/GreenBay.csproj -c Release -o './GreenBay'
 
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -42,5 +48,5 @@ jobs:
         with:
           app-name: 'GreenBayApp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E3D008FFD0D146EEAA53CBD0233CAA23 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E075F8A11EEC4E33B07AA597433ED8AC }}
           package: .

@@ -35,18 +35,10 @@ namespace GreenBay
 
             if (env != null && env.Equals("Development"))
             {
-                connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
+                connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             }
-            else if (env != null && env.Equals("Production"))
-            {
-                connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
-            } else
-            {
-                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
-            }
-     
+            builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
+
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(builder.Configuration)
                 .Enrich.FromLogContext()
@@ -100,39 +92,35 @@ namespace GreenBay
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
-            if (app.Environment.IsDevelopment())
+            try
             {
-                try
+                Log.Information("Starting up");
+                using (var serviceScope = app.Services.CreateScope())
                 {
-                    Log.Information("Starting up");
-                    using (var serviceScope = app.Services.CreateScope())
+                    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                    //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
+                    context.Database.EnsureCreated();
+                    if (context.Users.Count() == 0)
                     {
-                        var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                        //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
-                        context.Database.EnsureCreated();
-                        if (context.Users.Count() == 0)
-                        {
-                            context.Users.AddRange(Constants.Users);
-                            context.SaveChanges();
-                        }
-                        if (context.Items.Count() == 0)
-                        {
-                            context.Items.AddRange(Constants.Items);
-                            context.SaveChanges();
-                        }
+                        context.Users.AddRange(Constants.Users);
+                        context.SaveChanges();
                     }
-                    app.Run();
+                    if (context.Items.Count() == 0)
+                    {
+                        context.Items.AddRange(Constants.Items);
+                        context.SaveChanges();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Log.Fatal(ex, "Application start-up failed");
-                }
-                finally
-                {
-                    Log.CloseAndFlush();
-                }
+                app.Run();
             }
-            else app.Run();
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }     
     }
 }

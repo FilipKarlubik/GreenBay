@@ -13,24 +13,29 @@ namespace GreenBay.Tests.IntegrationTests
     public class HTTPClientFactory
     {
         protected readonly HttpClient _client;
+
         protected HTTPClientFactory()
-        { 
-            var appFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            var appFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(host =>
             {
-                builder.ConfigureServices(services =>
+                host.ConfigureServices(services =>
                 {
-                    services.RemoveAll(typeof(ApplicationContext));
+                    var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType ==
+                        typeof(DbContextOptions<ApplicationContext>));
+
+                    services.Remove(descriptor);
                     services.AddDbContext<ApplicationContext>(options =>
                     {
-                        options.UseInMemoryDatabase(databaseName: "TestingDatabase");
+                        options.UseInMemoryDatabase("InMemoryDB");
                     });
                     var sp = services.BuildServiceProvider();
                     using (var scope = sp.CreateScope())
                     {
                         var scopedServices = scope.ServiceProvider;
                         var appDb = scopedServices.GetRequiredService<ApplicationContext>();
-                        //appDb.Database.EnsureDeleted();
-                        //appDb.Database.EnsureCreated();
+                        appDb.Database.EnsureDeleted();
+                        appDb.Database.EnsureCreated();
                         if (appDb.Users.Count() == 0)
                         {
                             appDb.Users.AddRange(Constants.Users);

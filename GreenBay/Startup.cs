@@ -29,15 +29,15 @@ namespace GreenBay
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Tests";
             if (env.Equals("Development"))
             {
                 services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             }
-            //if (env.Equals("Production"))
-            //{
-            //    services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
-            //}
+            if (env.Equals("Production"))
+            {
+                services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
+            }
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
                  {

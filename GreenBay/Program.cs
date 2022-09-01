@@ -101,7 +101,36 @@ namespace GreenBay
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
-            app.Run();
+            try
+            {
+                Log.Information("Starting up");
+                using (var serviceScope = app.Services.CreateScope())
+                {
+                    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                    //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
+                    context.Database.EnsureCreated();
+                    if (context.Users.Count() == 0)
+                    {
+                        context.Users.AddRange(Constants.Users);
+                        context.SaveChanges();
+                    }
+                    if (context.Items.Count() == 0)
+                    {
+                        context.Items.AddRange(Constants.Items);
+                        context.SaveChanges();
+                    }
+                }
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
+            
         }     
     }
 }

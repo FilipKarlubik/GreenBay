@@ -42,6 +42,9 @@ namespace GreenBay
             {
                 connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
                 builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
+            } else
+            {
+                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
             }
      
             var logger = new LoggerConfiguration()

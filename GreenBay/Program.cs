@@ -35,7 +35,7 @@ namespace GreenBay
 
             if (env != null && env.Equals("Development"))
             {
-                connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
                 builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
             }
             else if (env != null && env.Equals("Production"))

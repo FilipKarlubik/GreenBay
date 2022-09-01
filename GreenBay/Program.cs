@@ -31,7 +31,7 @@ namespace GreenBay
         {
             var builder = WebApplication.CreateBuilder(args);
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            string connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 
             if (env != null && env.Equals("Development"))
             {

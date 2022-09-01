@@ -23,10 +23,24 @@ namespace GreenBay
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
-            Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (env != null && env.Equals("Development"))
+            {
+                Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .ReadFrom.Configuration(configuration)
+                .WriteTo.MSSqlServer(configuration.GetConnectionString("DefaultConnection"), autoCreateSqlTable: true, tableName: "Logs")
+                .CreateLogger();
+            }
+            else
+            {
+                var connectionString = "Server=tcp:popescucql.database.windows.net,1433;Initial Catalog=PopescuDB;Persist Security Info=False;User ID=Filipescu1;Password=Popescu007;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .ReadFrom.Configuration(configuration)
+                .WriteTo.MSSqlServer(connectionString, autoCreateSqlTable: true, tableName: "Logs")
+                .CreateLogger();
+            }
             try
             {
                 Log.Information("Starting up");

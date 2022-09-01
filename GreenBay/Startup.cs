@@ -30,11 +30,11 @@ namespace GreenBay
         public void ConfigureServices(IServiceCollection services)
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Tests";
-            if (env.Equals("Development"))
+            if (env != null && env.Equals("Development"))
             {
                 services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             }
-            if (env.Equals("Production"))
+            if (env != null && env.Equals("Production"))
             {
                 services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
             }

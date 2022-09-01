@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenBay", "GreenBay.csproj", "{12D1DEF3-24F6-4C0A-B4A5-B9347EDFCAE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GreenBay.Tests", "..\GreenBay.Tests\GreenBay.Tests.csproj", "{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GreenBay.Tests", "..\GreenBay.Tests\GreenBay.Tests.csproj", "{CF59FF20-1AAE-47BA-87A5-D9D332C224AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

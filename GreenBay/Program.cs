@@ -97,35 +97,39 @@ namespace GreenBay
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
-            try
+            if (app.Environment.IsDevelopment())
             {
-                Log.Information("Starting up");
-                using (var serviceScope = app.Services.CreateScope())
+                try
                 {
-                    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                    //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
-                    context.Database.EnsureCreated();
-                    if (context.Users.Count() == 0)
+                    Log.Information("Starting up");
+                    using (var serviceScope = app.Services.CreateScope())
                     {
-                        context.Users.AddRange(Constants.Users);
-                        context.SaveChanges();
+                        var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                        //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
+                        context.Database.EnsureCreated();
+                        if (context.Users.Count() == 0)
+                        {
+                            context.Users.AddRange(Constants.Users);
+                            context.SaveChanges();
+                        }
+                        if (context.Items.Count() == 0)
+                        {
+                            context.Items.AddRange(Constants.Items);
+                            context.SaveChanges();
+                        }
                     }
-                    if (context.Items.Count() == 0)
-                    {
-                        context.Items.AddRange(Constants.Items);
-                        context.SaveChanges();
-                    }
+                    app.Run();
                 }
-                app.Run();
+                catch (Exception ex)
+                {
+                    Log.Fatal(ex, "Application start-up failed");
+                }
+                finally
+                {
+                    Log.CloseAndFlush();
+                }
             }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Application start-up failed");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }
+            else app.Run();
         }     
     }
 }

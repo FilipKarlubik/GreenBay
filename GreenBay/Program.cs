@@ -19,6 +19,9 @@ using GreenBay.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog.Core;
+using Constants = GreenBay.Models.Constants;
+using System.Configuration;
 
 namespace GreenBay
 {
@@ -28,33 +31,26 @@ namespace GreenBay
         {
             var builder = WebApplication.CreateBuilder(args);
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if(env != null && env.Equals("Development"))
+            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            if (env != null && env.Equals("Development"))
             {
-                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-                var logger = new LoggerConfiguration()
-                  .ReadFrom.Configuration(builder.Configuration)
-                  .Enrich.FromLogContext()
-                  .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), autoCreateSqlTable: true, tableName: "Logs")
-                  .CreateLogger();
-                builder.Logging.ClearProviders();
-                builder.Logging.AddSerilog(logger);
+                connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
             }
-
-            if (env != null && env.Equals("Production"))
+            else if (env != null && env.Equals("Production"))
             {
-                var connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-                var connectionBuilder = new SqlConnectionStringBuilder(connectionString);
-                builder.Services.AddDbContext<ApplicationContext>(builder => builder.UseSqlServer(connectionBuilder.ConnectionString));
-
-                var logger = new LoggerConfiguration()
-                 .ReadFrom.Configuration(builder.Configuration)
-                 .Enrich.FromLogContext()
-                 .WriteTo.MSSqlServer(connectionBuilder.ConnectionString, autoCreateSqlTable: true, tableName: "Logs")
-                 .CreateLogger();
-                builder.Logging.ClearProviders();
-                builder.Logging.AddSerilog(logger);
+                connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(connectionString));
             }
+     
+            var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .WriteTo.MSSqlServer(connectionString, autoCreateSqlTable: true, tableName: "Logs")
+                .CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(logger);
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
                  {
@@ -130,7 +126,6 @@ namespace GreenBay
             {
                 Log.CloseAndFlush();
             }
-            
         }     
     }
 }

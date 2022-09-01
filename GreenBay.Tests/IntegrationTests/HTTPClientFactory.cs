@@ -13,14 +13,9 @@ namespace GreenBay.Tests.IntegrationTests
     public class HTTPClientFactory
     {
         protected readonly HttpClient _client;
-        //protected readonly IConfiguration configuration;
-
         protected HTTPClientFactory()
-        {
-            //configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json")
-             //   .Build();   
-
-            var appFactory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
+        { 
+            var appFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {

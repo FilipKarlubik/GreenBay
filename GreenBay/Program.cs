@@ -13,6 +13,12 @@ using System.Threading.Tasks;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
 using System.IO;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Data.SqlClient;
+using GreenBay.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace GreenBay
 {
@@ -20,59 +26,82 @@ namespace GreenBay
     {
         public static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
+            var builder = WebApplication.CreateBuilder(args);
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (env != null && env.Equals("Development"))
+            if(env != null && env.Equals("Development"))
             {
-                Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.MSSqlServer(configuration.GetConnectionString("DefaultConnection"), autoCreateSqlTable: true, tableName: "Logs")
-                .CreateLogger();
+                builder.Services.AddDbContext<ApplicationContext>(dbBuilder => dbBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+                var logger = new LoggerConfiguration()
+                  .ReadFrom.Configuration(builder.Configuration)
+                  .Enrich.FromLogContext()
+                  .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), autoCreateSqlTable: true, tableName: "Logs")
+                  .CreateLogger();
+                builder.Logging.ClearProviders();
+                builder.Logging.AddSerilog(logger);
+            }
+
+            if (env != null && env.Equals("Production"))
+            {
+                var connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+                var connectionBuilder = new SqlConnectionStringBuilder(connectionString);
+                builder.Services.AddDbContext<ApplicationContext>(builder => builder.UseSqlServer(connectionBuilder.ConnectionString));
+
+                var logger = new LoggerConfiguration()
+                 .ReadFrom.Configuration(builder.Configuration)
+                 .Enrich.FromLogContext()
+                 .WriteTo.MSSqlServer(connectionBuilder.ConnectionString, autoCreateSqlTable: true, tableName: "Logs")
+                 .CreateLogger();
+                builder.Logging.ClearProviders();
+                builder.Logging.AddSerilog(logger);
+            }
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                 .AddJwtBearer(options =>
+                 {
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+                         ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                         ValidAudience = builder.Configuration["Jwt:Audience"],
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                     };
+                 });
+            builder.Services.AddMvc();
+            builder.Services.AddControllers();
+            builder.Services.AddRazorPages();
+
+            builder.Services.AddTransient<ISecurityService, SecurityService>();
+            builder.Services.AddTransient<IStoreService, StoreService>();
+            builder.Services.AddTransient<ISellService, SellService>();
+            builder.Services.AddTransient<IBuyService, BuyService>();
+
+            var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+
             }
             else
             {
-                var connectionString = "Server=tcp:popescucql.database.windows.net,1433;Initial Catalog=PopescuDB;Persist Security Info=False;User ID=Filipescu1;Password=Popescu007;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-                Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.MSSqlServer(connectionString, autoCreateSqlTable: true, tableName: "Logs")
-                .CreateLogger();
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
-            try
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
             {
-                //Log.Information("Starting up");
-                var host = CreateHostBuilder(args).Build();
-                using (var serviceScope = host.Services.CreateScope())
-                {
-                 //   var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                    //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
-                 //   context.Database.EnsureCreated();
-                //    if (context.Users.Count() == 0) context.Users.AddRange(Constants.Users);
-               //     context.SaveChanges();
-               //     if (context.Items.Count() == 0) context.Items.AddRange(Constants.Items);
-                //    context.SaveChanges();
-                }
-                host.Run();
-            }
-            catch (Exception ex)
-            {
-                Log.Fatal(ex, "Application start-up failed");
-            }
-            finally
-            {
-                Log.CloseAndFlush();
-            }  
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-               // .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
+            app.Run();
+        }     
     }
 }

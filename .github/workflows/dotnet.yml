@@ -14,18 +14,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 3.1.x
+        dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore ./GreenBay/GreenBay.sln
     - name: Build
       run: dotnet build --no-restore ./GreenBay/GreenBay.sln
     - name: Test
       env:
-         TokenGenerationKey: ${{ secrets.TokenGenerationKey }}
-         TribesGametickLength: ${{ secrets.TribesGametickLength }}
-         MailServicePassword: ${{ secrets.MailServicePassword }}
-         TwoStepSecret: ${{ secrets.TwoStepSecret }}
-         DistanceMultiplier: ${{ secrets.DistanceMultiplier }}
          AzureUser: ${{ secrets.azureuser }}
          AzureSqlPassword: ${{ secrets.AZURESQLPASSWORD }}
       run: dotnet test --no-build --verbosity minimal ./GreenBay/

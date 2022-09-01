@@ -1,0 +1,35 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - GreenBay
+
+on:
+  push: 
+    branches:
+    - master
+
+jobs:
+  build-and-deploy:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore ./GreenBay/GreenBay.sln
+      
+    - name: Build & Publish
+      run: dotnet build --configuration Release ./GreenBay/GreenBay.sln
+      
+    - name: dotnet publish
+      run: dotnet publish ./GreenBay/GreenBay.csproj -c Release -o './GreenBay'
+      
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: GreenBayApp
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_281AD8EB3A6B402CAA6C3A8E5EF6B825 }}
+        package: './GreenBay'

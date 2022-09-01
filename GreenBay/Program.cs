@@ -43,17 +43,17 @@ namespace GreenBay
             }
             try
             {
-                Log.Information("Starting up");
+                //Log.Information("Starting up");
                 var host = CreateHostBuilder(args).Build();
                 using (var serviceScope = host.Services.CreateScope())
                 {
-                    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                 //   var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
                     //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
-                    context.Database.EnsureCreated();
-                    if (context.Users.Count() == 0) context.Users.AddRange(Constants.Users);
-                    context.SaveChanges();
-                    if (context.Items.Count() == 0) context.Items.AddRange(Constants.Items);
-                    context.SaveChanges();
+                 //   context.Database.EnsureCreated();
+                //    if (context.Users.Count() == 0) context.Users.AddRange(Constants.Users);
+               //     context.SaveChanges();
+               //     if (context.Items.Count() == 0) context.Items.AddRange(Constants.Items);
+                //    context.SaveChanges();
                 }
                 host.Run();
             }
@@ -69,7 +69,7 @@ namespace GreenBay
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog()
+               // .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

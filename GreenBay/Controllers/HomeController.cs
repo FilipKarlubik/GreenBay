@@ -45,5 +45,19 @@ namespace GreenBay.Controllers
             ViewBag.name = user.Name;
             return View(items);
         }
+
+        [HttpGet("/login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost("/login")]
+        public IActionResult LoginResult(string name, string password)
+        {
+            UserLogin userLogin = new UserLogin(name, password);
+            ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);  
+            return View(response);
+        }
     }
 }

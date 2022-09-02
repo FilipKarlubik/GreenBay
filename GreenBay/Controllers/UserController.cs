@@ -4,6 +4,7 @@ using GreenBay.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -53,10 +54,9 @@ namespace GreenBay.Controllers
             }
             return StatusCode(response.StatusCode, new { error = response.Message });
         }
-        
+   
+        [Authorize(Roles = "admin")]
         [HttpGet("show")] //list all existing users 
-        [AllowAnonymous]
-        [Authorize(Roles ="admin")]
         public ActionResult ShowAllUsers(int page, int itemCount)
         {           
             return Ok(_securityService.ListAllUsers(page, itemCount));
@@ -86,6 +86,20 @@ namespace GreenBay.Controllers
                 return Ok(_sellService.UserInfoDetailed(user.Id, token));
             }
             return NotFound(new { error = "User not found." });
+        }
+
+        [HttpPost("email")] // send an email with credentials
+        [AllowAnonymous]
+        public ActionResult SendEmail([FromBody] Credentials credentials)
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            User user = null;
+            if (identity.IsAuthenticated)
+            {
+                user = _securityService.DecodeUser(identity);
+            }
+            ResponseObject response = _securityService.ValidateCredentials(user, credentials);
+            return StatusCode(response.StatusCode, new { status = response.Message });
         }
     }
 }

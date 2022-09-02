@@ -110,7 +110,7 @@ namespace GreenBay.Controllers
                     });
                 }
                 return StatusCode(response.StatusCode, new { error = response.Message,
-                item = response.ItemInfo});
+                item_info = response.ItemInfo});
             }
             return Unauthorized(new { error = "Not valid token" });
         }

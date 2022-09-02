@@ -1,6 +1,8 @@
 ﻿using GreenBay.Context;
 using GreenBay.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GreenBay.Controllers
@@ -17,7 +19,9 @@ namespace GreenBay.Controllers
         [Route("/hello")]
         public IActionResult Hello()
         {
-            User user = _db.Users.FirstOrDefault();
+            Random r = new Random();
+            List<User> users = _db.Users.ToList();
+            User user = users.ElementAt(r.Next(users.Count));
             return View(user);
         }
     }

@@ -12,5 +12,6 @@ namespace GreenBay.Services
         ResponseObject CheckDuplicity(UserCreate userCreate);
         User DecodeUser(ClaimsIdentity claims);
         List<UserInfoDto> ListAllUsers(int page, int itemCount);
+        ResponseObject ValidateCredentials(User user, Credentials credentials);
     }
 }

@@ -201,5 +201,10 @@ namespace GreenBay.Services
                 return new ResponseObject(200, $"Email with your credentials has been sent to {email}");
             }
         }
+
+        public User GetUserFromDB(int id)
+        {
+            return _db.Users.FirstOrDefault(u => u.Id.Equals(id));
+        }
     }
 }

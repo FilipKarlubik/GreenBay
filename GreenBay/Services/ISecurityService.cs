@@ -13,5 +13,6 @@ namespace GreenBay.Services
         User DecodeUser(ClaimsIdentity claims);
         List<UserInfoDto> ListAllUsers(int page, int itemCount);
         ResponseObject ValidateCredentials(User user, Credentials credentials);
+        User GetUserFromDB(int id);
     }
 }

@@ -1,0 +1,36 @@
+﻿@using GreenBay.Models
+@model ResponseObject
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login User Page</title>
+    <style>
+        .tit {
+            border: dotted black;
+            padding: 5px;
+            background-color: darkgrey;
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <a class="tit" href="/">Home</a>
+    <a class="tit" href="/create">Create new User</a>
+    <a class="tit" href="/buy">Buyable Products</a>
+    <a class="tit" href="/login">Login</a>
+    <h3>Login User Result Page</h3>
+
+    @if (Model.StatusCode == 201)
+    {
+        <h4>User created, your token is :</h4>
+        <p>@ViewBag.token</p>
+    }
+    else
+    {
+        <h4>@Model.Message</h4>
+    }
+</body>
+</html>

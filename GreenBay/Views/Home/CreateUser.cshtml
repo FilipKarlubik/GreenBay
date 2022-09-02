@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Create User Page</title>
+    <style>
+        .tit {
+            border: dotted black;
+            padding: 5px;
+            background-color: darkgrey;
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <a class="tit" href="/">Home</a>
+    <a class="tit" href="/buy">Buyable Products</a>
+    <a class="tit" href="/login">Login</a>
+    <h3>Create User</h3>
+    <form method="post" action="/create">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="userName" required><br />
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required><br />
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required><br />
+        <label for="dollars">Money</label>
+        <input type="number" id="dollars" name="dollars" required><br />
+        <label for="role">Role</label>
+        <select id="role" name="role" required>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select>
+        <div>
+            <input type="submit" value="Create">
+            <a href="/">Cancel</a>
+        </div>
+    </form>
+</body>
+</html>

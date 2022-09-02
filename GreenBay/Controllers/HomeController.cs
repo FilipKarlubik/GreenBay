@@ -17,12 +17,15 @@ namespace GreenBay.Controllers
         private readonly ApplicationContext _db;
         private readonly ISecurityService _securityService;
         private readonly ISellService _sellService;
+        private readonly IStoreService _storeService;
 
-        public HomeController(ApplicationContext db, ISecurityService securityService, ISellService sellService)
+        public HomeController(ApplicationContext db, ISecurityService securityService
+            , ISellService sellService, IStoreService storeService)
         {
             _db = db; 
             _securityService = securityService;
             _sellService = sellService;
+            _storeService = storeService;
         }
 
         [Route("/hello")]
@@ -57,6 +60,25 @@ namespace GreenBay.Controllers
         {
             UserLogin userLogin = new UserLogin(name, password);
             ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);  
+            return View(response);
+        }
+
+        [HttpGet("/create")]
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+
+        [HttpPost("/create")]
+        public IActionResult CreateUserResult(string userName, string email, string password, string role, int dollars)
+        {
+            UserCreate userCreate = new UserCreate(userName, email, password, role, dollars);
+            ResponseObject response = _securityService.CheckDuplicity(userCreate);
+            if (response.StatusCode == 201)
+            {
+                User user = _storeService.CreateUser(userCreate);
+                ViewBag.token = _securityService.GenerateToken(user);
+            }
             return View(response);
         }
     }

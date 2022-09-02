@@ -7,5 +7,18 @@
         public string Password { get; set; }
         public string Role { get; set; }
         public int Dollars { get; set; }
+
+        public UserCreate(string userName, string email, string password, string role, int dollars)
+        {
+            UserName = userName;
+            Email = email;
+            Password = password;
+            Role = role;
+            Dollars = dollars;
+        }
+
+        public UserCreate()
+        {
+        }
     }
 }

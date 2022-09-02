@@ -17,11 +17,13 @@ namespace GreenBay.Services
     {
         private readonly ApplicationContext _db;
         private readonly IConfiguration _config;
+        private readonly IEmailService _emailService;
 
-        public SecurityService(ApplicationContext db, IConfiguration configuration)
+        public SecurityService(ApplicationContext db, IConfiguration configuration, IEmailService emailService)
         {
             _db = db;
             _config = configuration;
+            _emailService = emailService;
         }
 
         public ResponseLoginObjectDto Authenticate(UserLogin userLogin)
@@ -168,7 +170,7 @@ namespace GreenBay.Services
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
-
+                _emailService.SendEmail(email, password, name);
                 return new ResponseObject(200,$"Email with your credentials has been sent to {email}");
             }
             else
@@ -178,7 +180,7 @@ namespace GreenBay.Services
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
-
+                _emailService.SendEmail(email,password,name);
                 return new ResponseObject(200, $"Email with your credentials has been sent to {email}");
             }
         }

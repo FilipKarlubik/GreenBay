@@ -21,6 +21,7 @@ namespace GreenBay.Tests.UnitTests
     {
         private readonly ApplicationContext context;
         private readonly ISecurityService securityService;
+        private readonly IEmailService emailService;
         private readonly static DbContextOptions options = new DbContextOptionsBuilder<ApplicationContext>()
                .UseInMemoryDatabase("SecurityServiceTestDB").Options;
 
@@ -30,7 +31,8 @@ namespace GreenBay.Tests.UnitTests
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json")
                 .Build(); 
             context = new ApplicationContext(options);
-            securityService = new SecurityService(context, config);
+            emailService = new EmailService();
+            securityService = new SecurityService(context, config, emailService);
 
             context.Users.Add(new User() {Name = "Filip", Password = "f"
                 , Email = "filip.karlubik@gmail.com", Role = "Admin", Dollars = 100 });

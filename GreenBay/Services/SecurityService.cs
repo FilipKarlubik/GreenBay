@@ -163,24 +163,41 @@ namespace GreenBay.Services
             string name = string.Empty;
             if (user == null)
             {
-                if (credentials == null) return new ResponseObject(400, "No credentials was given.");
-                if (credentials.Email == null) return new ResponseObject(400, "No email was given.");
+                if (credentials == null)
+                {
+                    return new ResponseObject(400, "No credentials was given.");
+                }
+                if (credentials.Email == null)
+                {
+                    return new ResponseObject(400, "No email was given.");
+                }
                 User userFromDB = _db.Users.FirstOrDefault(u => u.Email == credentials.Email);
-                if (userFromDB == null) return new ResponseObject(404, $"User with email {credentials.Email} is not in database.");
+                if (userFromDB == null)
+                {
+                    return new ResponseObject(404, $"User with email {credentials.Email} is not in database.");
+                }
+                
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
                 _emailService.SendEmail(email, password, name);
+
                 return new ResponseObject(200,$"Email with your credentials has been sent to {email}");
             }
             else
             {
                 User userFromDB = _db.Users.FirstOrDefault(u => u.Email == user.Email);
-                if (userFromDB == null) return new ResponseObject(404, $"User with email {user.Email} written in token is not in database.");
+                if (userFromDB == null)
+                {
+                    return new ResponseObject(404, $"User with email {user.Email} written in token is not in database.");
+
+                }
+                
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
                 _emailService.SendEmail(email,password,name);
+                
                 return new ResponseObject(200, $"Email with your credentials has been sent to {email}");
             }
         }

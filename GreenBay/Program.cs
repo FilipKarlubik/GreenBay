@@ -1,5 +1,4 @@
 using GreenBay.Context;
-using GreenBay.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,21 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Serilog;
-using Serilog.Sinks.MSSqlServer;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Data.SqlClient;
 using GreenBay.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Serilog.Core;
-using Constants = GreenBay.Models.Constants;
-using System.Configuration;
+using GreenBay.Models;
 
 namespace GreenBay
 {
@@ -68,6 +60,7 @@ namespace GreenBay
             builder.Services.AddTransient<IStoreService, StoreService>();
             builder.Services.AddTransient<ISellService, SellService>();
             builder.Services.AddTransient<IBuyService, BuyService>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
 
             var app = builder.Build();
 

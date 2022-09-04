@@ -1,10 +1,11 @@
 ﻿@using GreenBay.Models.DTOs
-@model IEnumerable<ItemInfoDto>
+@model ResponseItemObjectDto
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Show All Items</title>
+    <title>Create User Page</title>
     <style>
         .tit {
             border: dotted black;
@@ -38,36 +39,35 @@
     <a class="tit" href="/sellable">Only Not Sold Products</a>
     <a class="tit" href="/all">All Products</a>
     <a class="tit" href="/add">Add Product</a>
-    <h3>List of all products, here you can see them, @ViewBag.name</h3>
-    <table>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>CreatedAt</th>
-            <th>Price</th>
-            <th>Image</th>
-            <th>SellingBy</th>
-            <th>HighestBid</th>
-            <th>HighestBidBy</th>
-            <th>BoughtBy</th>
-        </tr>
-        @foreach (ItemInfoDto item in Model)
-        {
+    <h3>Add Product Result Page</h3>
+
+    @if (Model.StatusCode == 201)
+    {
+        <h4>@Model.Message</h4>
+        <table>
             <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.CreatedAt</td>
-                <td>@item.Price</td>
-                <td><img class="circular_image" src="@item.ImageUrl"></td>
-                <td>@item.SellingBy</td>
-                <td>@item.HighestBid</td>
-                <td>@item.HighestBidBy</td>
-                <td>@item.BoughtBy</td>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
             </tr>
-        }
-    </table>
-    <h3>You have @ViewBag.money Money</h3>
+            <tr>
+                <td>@Model.ItemInfo.Id</td>
+                <td>@Model.ItemInfo.Name</td>
+                <td>@Model.ItemInfo.Description</td>
+                <td>@Model.ItemInfo.CreatedAt</td>
+                <td>@Model.ItemInfo.Price</td>
+                <td><img class="circular_image" src="@Model.ItemInfo.ImageUrl"></td>
+                <td>@Model.ItemInfo.SellingBy</td>  
+            </tr>
+        </table>
+    }
+    else
+    {
+        <h4 style="color:red">@Model.Message</h4>
+    }
 </body>
 </html>

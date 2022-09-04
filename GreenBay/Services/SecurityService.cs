@@ -213,7 +213,7 @@ namespace GreenBay.Services
             if (cookies == null) return -1;
             if (!cookies.ContainsKey("Authorization")) return -1;
             
-            var token = cookies["Authorization"].ToString();
+            string token = cookies["Authorization"];
             int idFromToken = ValidateToken(token);
             
             if (idFromToken == -1) return -1;

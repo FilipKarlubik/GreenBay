@@ -1,5 +1,6 @@
 ﻿using GreenBay.Models;
 using GreenBay.Models.DTOs;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
 
@@ -14,5 +15,7 @@ namespace GreenBay.Services
         List<UserInfoDto> ListAllUsers(int page, int itemCount);
         ResponseObject ValidateCredentials(User user, Credentials credentials);
         User GetUserFromDB(int id);
+        int CheckJWTCookieValidityReturnsUserID(IRequestCookieCollection cookies);
+        int ValidateToken(string token);
     }
 }

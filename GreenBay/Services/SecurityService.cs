@@ -1,6 +1,7 @@
 ﻿using GreenBay.Context;
 using GreenBay.Models;
 using GreenBay.Models.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -37,18 +38,18 @@ namespace GreenBay.Services
                 return new ResponseLoginObjectDto(400, "Not valid password.");
             }
             User currentUser = _db.Users.FirstOrDefault(u => u.Name.ToLower().Equals(userLogin.UserName.ToLower()));
-            if  (currentUser == null)
+            if (currentUser == null)
             {
                 return new ResponseLoginObjectDto(404, $"User with name {userLogin.UserName} not found in database.");
             }
-            if(!currentUser.Password.Equals(userLogin.Password))
+            if (!currentUser.Password.Equals(userLogin.Password))
             {
                 return new ResponseLoginObjectDto(409, "Given password is wrong.");
             }
-            string token = GenerateToken(currentUser); 
+            string token = GenerateToken(currentUser);
             ResponseLoginObjectOutputDto output = new ResponseLoginObjectOutputDto(
                 currentUser.Dollars, token);
-            
+
             return new ResponseLoginObjectDto(200, "You have logged in.", output);
         }
 
@@ -59,7 +60,7 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "Not valid input object.");
             }
-            if(userCreate.UserName == null || userCreate.UserName == String.Empty)
+            if (userCreate.UserName == null || userCreate.UserName == String.Empty)
             {
                 return new ResponseObject(400, "No UserName was given.");
             }
@@ -67,7 +68,7 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "No password was given.");
             }
-            if (userCreate.Email == null || userCreate.Email == String.Empty) 
+            if (userCreate.Email == null || userCreate.Email == String.Empty)
             {
                 return new ResponseObject(400, "No Email adress was given.");
             }
@@ -83,7 +84,7 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "No valid dollars amount was given.");
             }
-            if (_db.Users.Any(u => u.Name.ToLower().Equals(userCreate.UserName.ToLower()))) 
+            if (_db.Users.Any(u => u.Name.ToLower().Equals(userCreate.UserName.ToLower())))
             {
                 return new ResponseObject(409, $"User with name {userCreate.UserName} already exists.");
             }
@@ -150,8 +151,8 @@ namespace GreenBay.Services
             List<UserInfoDto> users = new List<UserInfoDto>();
             foreach (User user in usersInDB)
             {
-                users.Add(new UserInfoDto( user.Id, user.Name, user.Password, user.Email
-                    ,user.Dollars, user.Role, user.CreatedAt));
+                users.Add(new UserInfoDto(user.Id, user.Name, user.Password, user.Email
+                    , user.Dollars, user.Role, user.CreatedAt));
             }
             return users;
         }
@@ -176,13 +177,13 @@ namespace GreenBay.Services
                 {
                     return new ResponseObject(404, $"User with email {credentials.Email} is not in database.");
                 }
-                
+
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
                 _emailService.SendEmail(email, password, name);
 
-                return new ResponseObject(200,$"Email with your credentials has been sent to {email}");
+                return new ResponseObject(200, $"Email with your credentials has been sent to {email}");
             }
             else
             {
@@ -192,12 +193,12 @@ namespace GreenBay.Services
                     return new ResponseObject(404, $"User with email {user.Email} written in token is not in database.");
 
                 }
-                
+
                 email = userFromDB.Email;
                 password = userFromDB.Password;
                 name = userFromDB.Name;
-                _emailService.SendEmail(email,password,name);
-                
+                _emailService.SendEmail(email, password, name);
+
                 return new ResponseObject(200, $"Email with your credentials has been sent to {email}");
             }
         }
@@ -205,6 +206,49 @@ namespace GreenBay.Services
         public User GetUserFromDB(int id)
         {
             return _db.Users.FirstOrDefault(u => u.Id.Equals(id));
+        }
+
+        public int CheckJWTCookieValidityReturnsUserID(IRequestCookieCollection cookies)
+        {
+            if (cookies == null) return -1;
+            if (!cookies.ContainsKey("Authorization")) return -1;
+            
+            var token = cookies["Authorization"].ToString();
+            int idFromToken = ValidateToken(token);
+            
+            if (idFromToken == -1) return -1;
+            
+            return idFromToken;
+        }
+
+        public int ValidateToken(string token)
+        {
+            if (token == null || token == String.Empty)
+            {
+                return -1;
+            }
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"));
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var claims = jwtToken.Claims;
+                var userId = int.Parse(jwtToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value);
+                return userId;
+            }
+            catch
+            {
+                return -1;
+            }
         }
     }
 }

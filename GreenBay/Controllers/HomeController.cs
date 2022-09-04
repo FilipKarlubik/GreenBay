@@ -3,11 +3,13 @@ using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using GreenBay.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 
 namespace GreenBay.Controllers
@@ -37,12 +39,12 @@ namespace GreenBay.Controllers
             return View(user);
         }
 
-        [Authorize]
         [Route("/buy")]
         public IActionResult ListBuyableItems(int page, int itemCount)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            User user = _securityService.GetUserFromDB(_securityService.DecodeUser(identity).Id);
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1) return BadRequest();
+            User user = _securityService.GetUserFromDB(userID);
             List<ItemInfoDto> items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
@@ -59,7 +61,10 @@ namespace GreenBay.Controllers
         public IActionResult LoginResult(string name, string password)
         {
             UserLogin userLogin = new UserLogin(name, password);
-            ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);  
+            ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);
+            var cookies = HttpContext.Response.Cookies;
+            var Token = response.ResponseLoginObjectOutput.Token;
+            cookies.Append("Authorization", Token);
             return View(response);
         }
 

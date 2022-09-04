@@ -24,7 +24,7 @@ namespace GreenBay.Controllers
         public HomeController(ApplicationContext db, ISecurityService securityService
             , ISellService sellService, IStoreService storeService)
         {
-            _db = db; 
+            _db = db;
             _securityService = securityService;
             _sellService = sellService;
             _storeService = storeService;
@@ -156,7 +156,7 @@ namespace GreenBay.Controllers
         }
 
         [HttpPost("/add")]
-        public IActionResult AddProductResult(string name, string description,string imageUrl, int price)
+        public IActionResult AddProductResult(string name, string description, string imageUrl, int price)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
@@ -168,9 +168,23 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            ItemCreate item = new ItemCreate(name,description,imageUrl,price);
+            ItemCreate item = new ItemCreate(name, description, imageUrl, price);
             ResponseItemObjectDto response = _storeService.CreateItem(item, user);
             return View(response);
+        }
+
+        [HttpGet("/email")]
+        public IActionResult SendEmailWithCreds()
+        {
+            return View();
+        }
+
+        [HttpPost("/email")]
+        public IActionResult SendEmailWithCredsResult(string email)
+        {
+            Credentials credentials = new Credentials(email);
+            ResponseObject result = _securityService.ValidateCredentials(null, credentials);
+            return View(result);
         }
     }
 }

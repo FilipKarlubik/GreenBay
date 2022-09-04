@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Add Product Page</title>
+    <title>Forgotten Credentials Page</title>
     <style>
         .tit {
             border: dotted black;
@@ -22,20 +22,12 @@
     <a class="tit" href="/all">All Products</a>
     <a class="tit" href="/add">Add Product</a>
     <a class="tit" href="/email">Forgotten Password</a>
-    <h3>Add Product</h3>
-    <form method="post" action="/add">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required><br />
-        <label for="description">Description</label>
-        <input type="text" id="description" name="description" required><br />
-        <label for="price">Price</label>
-        <input type="number" id="price" name="price" min="1" required><br />
-        <label for="imageUrl">Picture Url</label>
-        <input type="url" id="imageUrl" name="imageUrl" required><br />
-        <div>
-            <input type="submit" value="Add">
-            <a href="/">Cancel</a>
-        </div>
+    <h3>Enter Your Email Address to send your login and password</h3>
+    <form method="post" action="/email">
+        <label for="email">Name</label>
+        <input type="email" id="email" name="email" required>
+        <input type="submit" value="Send Email">
+        <a href="/">Cancel</a>
     </form>
 </body>
 </html>

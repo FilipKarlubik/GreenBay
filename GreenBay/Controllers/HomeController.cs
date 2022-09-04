@@ -39,13 +39,37 @@ namespace GreenBay.Controllers
             return View(user);
         }
 
-        [Route("/buy")]
+        [Route("/buyable")]
         public IActionResult ListBuyableItems(int page, int itemCount)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1) return BadRequest();
             User user = _securityService.GetUserFromDB(userID);
             List<ItemInfoDto> items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
+            ViewBag.money = user.Dollars;
+            ViewBag.name = user.Name;
+            return View(items);
+        }
+
+        [Route("/all")]
+        public IActionResult ListAllItems(int page, int itemCount)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1) return BadRequest();
+            User user = _securityService.GetUserFromDB(userID);
+            List<ItemInfoDto> items = _sellService.ListAllItems(page, itemCount);
+            ViewBag.money = user.Dollars;
+            ViewBag.name = user.Name;
+            return View(items);
+        }
+
+        [Route("/sellable")]
+        public IActionResult ListSellableItems(int page, int itemCount)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1) return BadRequest();
+            User user = _securityService.GetUserFromDB(userID);
+            List<ItemInfoDto> items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             return View(items);

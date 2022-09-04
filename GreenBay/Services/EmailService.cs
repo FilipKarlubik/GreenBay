@@ -15,7 +15,8 @@ namespace GreenBay.Services
             email.From.Add(MailboxAddress.Parse("eucyontribes@gmail.com"));
             email.To.Add(MailboxAddress.Parse(emailAdressTo));
             email.Subject = "Sending Forgotten Credentials from GreenBay";
-            email.Body = new TextPart(TextFormat.Html) { Text = $"Login = {login}, Password = {password}." };
+            email.Body = new TextPart(TextFormat.Html) { Text = $"Login = {login}, Password = {password}.\n" +
+                $"<a href=\"https://greenbayapp.azurewebsites.net/login\">click here for login</a>" };
 
             using var smtp = new SmtpClient();
             smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);

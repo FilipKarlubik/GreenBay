@@ -17,10 +17,12 @@
     </style>
 </head>
 <body>
-    <a class="tit" href="/">Home</a>
+    <a class="tit" href=" /">Home</a>
     <a class="tit" href="/create">Create new User</a>
-    <a class="tit" href="/buy">Buyable Products</a>
     <a class="tit" href="/login">Login</a>
+    <a class="tit" href="/buyable">Only Buyable Products</a>
+    <a class="tit" href="/sellable">Only Not Sold Products</a>
+    <a class="tit" href="/all">All Products</a>
     <h3>Login User Result Page</h3>
     
         @if (Model.StatusCode == 200)
@@ -30,7 +32,7 @@
         }
         else
         {
-            <h4>@Model.Message</h4>
+            <h4 style="color:red">@Model.Message</h4>
         }
 </body>
 </html>

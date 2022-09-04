@@ -43,8 +43,15 @@ namespace GreenBay.Controllers
         public IActionResult ListBuyableItems(int page, int itemCount)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
-            if (userID == -1) return BadRequest();
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
             User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
             List<ItemInfoDto> items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
@@ -55,8 +62,15 @@ namespace GreenBay.Controllers
         public IActionResult ListAllItems(int page, int itemCount)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
-            if (userID == -1) return BadRequest();
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
             User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
             List<ItemInfoDto> items = _sellService.ListAllItems(page, itemCount);
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
@@ -67,8 +81,15 @@ namespace GreenBay.Controllers
         public IActionResult ListSellableItems(int page, int itemCount)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
-            if (userID == -1) return BadRequest();
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
             User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
             List<ItemInfoDto> items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
@@ -86,9 +107,12 @@ namespace GreenBay.Controllers
         {
             UserLogin userLogin = new UserLogin(name, password);
             ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);
-            var cookies = HttpContext.Response.Cookies;
-            var Token = response.ResponseLoginObjectOutput.Token;
-            cookies.Append("Authorization", Token);
+            if (response.StatusCode == 200)
+            {
+                var cookies = HttpContext.Response.Cookies;
+                var Token = response.ResponseLoginObjectOutput.Token;
+                cookies.Append("Authorization", Token);
+            }
             return View(response);
         }
 
@@ -106,8 +130,46 @@ namespace GreenBay.Controllers
             if (response.StatusCode == 201)
             {
                 User user = _storeService.CreateUser(userCreate);
-                ViewBag.token = _securityService.GenerateToken(user);
+                var Token = _securityService.GenerateToken(user);
+                ViewBag.token = Token;
+                var cookies = HttpContext.Response.Cookies;
+                cookies.Append("Authorization", Token);
             }
+            return View(response);
+        }
+
+
+        [HttpGet("/add")]
+        public IActionResult AddProduct()
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            return View();
+        }
+
+        [HttpPost("/add")]
+        public IActionResult AddProductResult(string name, string description,string imageUrl, int price)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            ItemCreate item = new ItemCreate(name,description,imageUrl,price);
+            ResponseItemObjectDto response = _storeService.CreateItem(item, user);
             return View(response);
         }
     }

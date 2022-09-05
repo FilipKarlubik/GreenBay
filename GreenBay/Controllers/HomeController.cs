@@ -185,7 +185,7 @@ namespace GreenBay.Controllers
         {
             Credentials credentials = new Credentials(email);
             ResponseObject result = _securityService.ValidateCredentials(null, credentials);
-            return View(result);
+            return View("ResponseObjectPage", result);
         }
 
         [HttpGet("/info")]
@@ -237,7 +237,7 @@ namespace GreenBay.Controllers
                 return NotFound("User not found");
             }
             var result = _storeService.ManageMoney(new DollarsManage(amount, action), user.Id);   
-            return View(result);
+            return View("ResponseObjectPage", result);
         }
 
         [HttpGet("/users")]
@@ -292,6 +292,40 @@ namespace GreenBay.Controllers
             }
             ResponseItemObjectDto result = _buyService.Bid(new ItemBid(itemId, bid), user);
             return View(result);
+        }
+
+        [HttpPost("/sell-withdraw")]
+        public IActionResult SellOrWithdraw(int itemId, string action)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            ResponseObject result = _buyService.SellOrWithdraw(new ItemAction(itemId, action), user);
+            return View("ResponseObjectPage", result);
+        }
+
+        [HttpPost("/buy-withdraw")]
+        public IActionResult BuyOrWithdraw(int itemId, string action)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            ResponseObject result = _buyService.BuyOrWithdraw(new ItemAction(itemId, action), user);
+            return View("ResponseObjectPage", result);
         }
     }
 }

@@ -151,6 +151,8 @@
                 <th>SellingBy</th>
                 <th>HighestBid</th>
                 <th>HighestBidBy</th>
+                <th>Sell for the highest bid</th>
+                <th>Withdraw</th>
             </tr>
             @foreach (var item in Model.ItemsTryingToSell)
             {
@@ -164,6 +166,20 @@
                     <td>@item.SellingBy</td>
                     <td>@item.HighestBid</td>
                     <td>@item.HighestBidBy</td>
+                    <td>
+                        <form method="post" action="/sell-withdraw">
+                            <input value="@item.Id" name="itemId" hidden>
+                            <input value="sell" name="action" hidden>
+                            <input type="submit" value="Sell">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="/sell-withdraw">
+                            <input value="@item.Id" name="itemId" hidden>
+                            <input value="withdraw" name="action" hidden>
+                            <input type="submit" value="Withdraw">
+                        </form>
+                    </td>
                 </tr>
             }
         </table>
@@ -182,6 +198,8 @@
                 <th>SellingBy</th>
                 <th>HighestBid</th>
                 <th>HighestBidBy</th>
+                <th>Buy for the actual bid</th>
+                <th>Withdraw your bid</th>
             </tr>
             @foreach (var item in Model.ItemsTryingToBuy)
             {
@@ -195,6 +213,20 @@
                     <td>@item.SellingBy</td>
                     <td>@item.HighestBid</td>
                     <td>@item.HighestBidBy</td>
+                    <td>
+                        <form method="post" action="/buy-withdraw">
+                            <input value="@item.Id" name="itemId" hidden>
+                            <input value="buy" name="action" hidden>
+                            <input type="submit" value="Buy">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" action="/buy-withdraw">
+                            <input value="@item.Id" name="itemId" hidden>
+                            <input value="withdraw" name="action" hidden>
+                            <input type="submit" value="Withdraw">
+                        </form>
+                    </td>
                 </tr>
             }
         </table>

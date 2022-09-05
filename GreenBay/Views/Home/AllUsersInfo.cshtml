@@ -1,11 +1,10 @@
 ﻿@using GreenBay.Models.DTOs
-@model ResponseItemObjectDto
-
+@model IEnumerable<UserInfoDto>
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Create User Page</title>
+    <title>Users List Page</title>
     <style>
         .tit {
             border: dotted black;
@@ -44,35 +43,27 @@
     <a class="tit" href="/money">Manage Money</a>
     <a class="tit" href="/users">Users List</a>
 
-    <h3>Add Product Result Page</h3>
-
-    @if (Model.StatusCode == 201)
-    {
-        <h4>@Model.Message</h4>
-        <table>
+    <h3>List of users:</h3>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Dollars</th>
+            <th>CreatedAt</th>
+            <th>Email</th>
+            <th>Role</th>
+        </tr>
+        @foreach (var user in Model)
+        {
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>CreatedAt</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>SellingBy</th>
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.Dollars</td>
+                <td>@user.CreatedAt</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>  
             </tr>
-            <tr>
-                <td>@Model.ItemInfo.Id</td>
-                <td>@Model.ItemInfo.Name</td>
-                <td>@Model.ItemInfo.Description</td>
-                <td>@Model.ItemInfo.CreatedAt</td>
-                <td>@Model.ItemInfo.Price</td>
-                <td><img class="circular_image" src="@Model.ItemInfo.ImageUrl"></td>
-                <td>@Model.ItemInfo.SellingBy</td>  
-            </tr>
-        </table>
-    }
-    else
-    {
-        <h4 style="color:red">@Model.Message</h4>
-    }
+        }
+    </table>
 </body>
 </html>

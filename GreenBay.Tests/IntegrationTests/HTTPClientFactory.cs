@@ -38,7 +38,11 @@ namespace GreenBay.Tests.IntegrationTests
                         //appDb.Database.EnsureCreated();
                         if (appDb.Users.Count() == 0)
                         {
-                            appDb.Users.AddRange(Constants.Users);
+                            foreach (User user in Constants.Users)
+                            {
+                                user.Password = Constants.EncryptPassword(user.Password);
+                                appDb.Users.Add(user);
+                            }
                             appDb.SaveChanges();
                         }
                         if (appDb.Items.Count() == 0)

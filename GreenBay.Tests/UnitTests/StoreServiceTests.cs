@@ -57,7 +57,7 @@ namespace GreenBay.Tests.UnitTests
                 //Assert
             Assert.Equal("Filip", user.Name);
             Assert.Equal("filip.karlubik@gmail.com", user.Email);
-            Assert.Equal("f", user.Password);
+            Assert.Equal("ZnN1cGVyU2VjdXJlU2VjcmVkS2V5IQ==", user.Password);
             Assert.Equal(100, user.Dollars);
             Assert.Equal("admin", user.Role);
             Assert.Equal(1, usersCount);

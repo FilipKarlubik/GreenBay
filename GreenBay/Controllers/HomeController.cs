@@ -20,14 +20,16 @@ namespace GreenBay.Controllers
         private readonly ISecurityService _securityService;
         private readonly ISellService _sellService;
         private readonly IStoreService _storeService;
+        private readonly IBuyService _buyService;
 
         public HomeController(ApplicationContext db, ISecurityService securityService
-            , ISellService sellService, IStoreService storeService)
+            , ISellService sellService, IStoreService storeService, IBuyService buyService)
         {
             _db = db;
             _securityService = securityService;
             _sellService = sellService;
             _storeService = storeService;
+            _buyService = buyService;
         }
 
         [Route("/hello")]
@@ -137,7 +139,6 @@ namespace GreenBay.Controllers
             }
             return View(response);
         }
-
 
         [HttpGet("/add")]
         public IActionResult AddProduct()
@@ -258,6 +259,39 @@ namespace GreenBay.Controllers
             }
             List<UserInfoDto> users = _securityService.ListAllUsers(page,itemCount);
             return View(users);
+        }
+
+        [HttpGet("/bid")]
+        public IActionResult Bid()
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            return View(user);
+        }
+
+        [HttpPost("/bid")]
+        public IActionResult BidResult(int itemId, int bid)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            ResponseItemObjectDto result = _buyService.Bid(new ItemBid(itemId, bid), user);
+            return View(result);
         }
     }
 }

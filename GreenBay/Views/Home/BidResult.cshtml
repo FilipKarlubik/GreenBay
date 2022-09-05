@@ -1,10 +1,11 @@
 ﻿@using GreenBay.Models.DTOs
-@model IEnumerable<UserInfoDto>
+@model ResponseItemObjectDto
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Users List Page</title>
+    <title>Bid Result Page</title>
     <style>
         .tit {
             border: dotted black;
@@ -44,27 +45,41 @@
     <a class="tit" href="/users">Users List</a>
     <a class="tit" href="/bid">Bid</a>
 
-    <h3>List of users:</h3>
-    <table>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Dollars</th>
-            <th>CreatedAt</th>
-            <th>Email</th>
-            <th>Role</th>
-        </tr>
-        @foreach (var user in Model)
-        {
+    @if (Model.StatusCode == 200)
+    {
+        <h3>Result: Success</h3>
+        <h4>@Model.Message</h4>
+        <table>
             <tr>
-                <td>@user.Id</td>
-                <td>@user.UserName</td>
-                <td>@user.Dollars</td>
-                <td>@user.CreatedAt</td>
-                <td>@user.Email</td>
-                <td>@user.Role</td>  
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
+                <th>HighestBid</th>
+                <th>HighestBidBy</th>
+                <th>BoughtBy</th>
             </tr>
-        }
-    </table>
+            <tr>
+                <td>@Model.ItemInfo.Id</td>
+                <td>@Model.ItemInfo.Name</td>
+                <td>@Model.ItemInfo.Description</td>
+                <td>@Model.ItemInfo.CreatedAt</td>
+                <td>@Model.ItemInfo.Price</td>
+                <td><img class="circular_image" src="@Model.ItemInfo.ImageUrl"></td>
+                <td>@Model.ItemInfo.SellingBy</td>
+                <td>@Model.ItemInfo.HighestBid</td>
+                <td>@Model.ItemInfo.HighestBidBy</td>
+                <td>@Model.ItemInfo.BoughtBy</td>
+            </tr>
+        </table>
+    }
+    else
+    {
+        <h3>Result: Denied</h3>
+        <h4 style="color:red">@Model.Message</h4>
+    }
 </body>
 </html>

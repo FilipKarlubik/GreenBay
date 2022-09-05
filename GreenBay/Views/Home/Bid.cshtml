@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Forgotten Credentials Page</title>
+    <title>Bid Page</title>
     <style>
         .tit {
             border: dotted black;
@@ -27,11 +27,13 @@
     <a class="tit" href="/users">Users List</a>
     <a class="tit" href="/bid">Bid</a>
 
-    <h3>Enter Your Email Address to send your login and password</h3>
-    <form method="post" action="/email">
-        <label for="email">Name</label>
-        <input type="email" id="email" name="email" required>
-        <input type="submit" value="Send Email">
+    <h3>Bid on Item</h3>
+    <form method="post" action="/bid">
+        <label for="itemId">Product ID</label>
+        <input type="number" id="itemId" name="itemId" min="1" required>
+        <label for="bid">Bid</label>
+        <input type="number" id="bid" name="bid" min="1" required>
+        <input type="submit" value="OK">
         <a href="/">Cancel</a>
     </form>
 </body>

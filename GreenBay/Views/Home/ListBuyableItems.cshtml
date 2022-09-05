@@ -40,6 +40,7 @@
     <a class="tit" href="/info">User Info</a>
     <a class="tit" href="/money">Manage Money</a>
     <a class="tit" href="/users">Users List</a>
+    <a class="tit" href="/bid">Bid</a>
 
     <h3>List of buyable products, ready for you, @ViewBag.name. You have @ViewBag.money Dollars.</h3>
     <table>
@@ -53,6 +54,7 @@
             <th>SellingBy</th>
             <th>HighestBid</th>
             <th>HighestBidBy</th>
+            <th>Your Bid</th>
         </tr>
         @foreach (ItemInfoDto item in Model)
         {
@@ -66,6 +68,13 @@
             <td>@item.SellingBy</td>
             <td>@item.HighestBid</td>
             <td>@item.HighestBidBy</td>
+            <td>
+                <form method="post" action="/bid">
+                    <input value="@item.Id" name="itemId" hidden>
+                    <input type="number" name="bid" min="1" required>
+                    <input type="submit" value="Ok">
+                </form>
+            </td>
         </tr>
         }
     </table>

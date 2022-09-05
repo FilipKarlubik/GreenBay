@@ -45,7 +45,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -64,7 +64,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -83,7 +83,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -111,7 +111,7 @@ namespace GreenBay.Controllers
             {
                 var cookies = HttpContext.Response.Cookies;
                 var Token = response.ResponseLoginObjectOutput.Token;
-                cookies.Append("Authorization", Token);
+                cookies.Append("Authorization", Token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             }
             return View(response);
         }
@@ -133,7 +133,7 @@ namespace GreenBay.Controllers
                 var Token = _securityService.GenerateToken(user);
                 ViewBag.token = Token;
                 var cookies = HttpContext.Response.Cookies;
-                cookies.Append("Authorization", Token);
+                cookies.Append("Authorization", Token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict });
             }
             return View(response);
         }
@@ -145,7 +145,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -161,7 +161,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -193,7 +193,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -210,7 +210,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -228,7 +228,7 @@ namespace GreenBay.Controllers
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return BadRequest("Unauthorized");
+                return Unauthorized("Unauthorized");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -237,6 +237,27 @@ namespace GreenBay.Controllers
             }
             var result = _storeService.ManageMoney(new DollarsManage(amount, action), user.Id);   
             return View(result);
+        }
+
+        [HttpGet("/users")]
+        public IActionResult AllUsersInfo(int page, int itemCount)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            if (user.Role != "admin")
+            {
+                return Unauthorized("Unauthorized, you must have admin permissions to show this page.");
+            }
+            List<UserInfoDto> users = _securityService.ListAllUsers(page,itemCount);
+            return View(users);
         }
     }
 }

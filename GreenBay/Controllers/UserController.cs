@@ -4,10 +4,6 @@ using GreenBay.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -106,12 +102,6 @@ namespace GreenBay.Controllers
         [HttpPatch("encrypt_passwords")]
         public ActionResult EncryptPasswords()
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            User user = null;
-            if (identity.IsAuthenticated)
-            {
-                user = _securityService.DecodeUser(identity);
-            }
             ResponseObject response = _securityService.EncryptPasswords();
             if( response.StatusCode != 200 )
             {

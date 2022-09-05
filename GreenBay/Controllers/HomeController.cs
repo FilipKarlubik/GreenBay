@@ -2,15 +2,11 @@
 using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using GreenBay.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
 
 namespace GreenBay.Controllers
 {
@@ -32,7 +28,7 @@ namespace GreenBay.Controllers
             _buyService = buyService;
         }
 
-        [Route("/hello")]
+        [HttpGet("/hello")]
         public IActionResult Hello()
         {
             Random r = new Random();
@@ -41,8 +37,8 @@ namespace GreenBay.Controllers
             return View(user);
         }
 
-        [Route("/buyable")]
-        public IActionResult ListBuyableItems(int page, int itemCount)
+        [HttpGet("/buyable")]
+        public IActionResult ListBuyableItems(int page, int itemCount, string search)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
@@ -55,13 +51,17 @@ namespace GreenBay.Controllers
                 return NotFound("User not found");
             }
             List<ItemInfoDto> items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
+            if(search != null && search != String.Empty)
+            {
+                items = _storeService.SearchText(items, search);
+            }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             return View(items);
         }
 
-        [Route("/all")]
-        public IActionResult ListAllItems(int page, int itemCount)
+        [HttpGet("/all")]
+        public IActionResult ListAllItems(int page, int itemCount, string search)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
@@ -74,13 +74,17 @@ namespace GreenBay.Controllers
                 return NotFound("User not found");
             }
             List<ItemInfoDto> items = _sellService.ListAllItems(page, itemCount);
+            if (search != null && search != String.Empty)
+            {
+                items = _storeService.SearchText(items, search);
+            }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             return View(items);
         }
 
-        [Route("/sellable")]
-        public IActionResult ListSellableItems(int page, int itemCount)
+        [HttpGet("/sellable")]
+        public IActionResult ListSellableItems(int page, int itemCount, string search)
         {
             var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
@@ -93,6 +97,10 @@ namespace GreenBay.Controllers
                 return NotFound("User not found");
             }
             List<ItemInfoDto> items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+            if (search != null && search != String.Empty)
+            {
+                items = _storeService.SearchText(items, search);
+            }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             return View(items);

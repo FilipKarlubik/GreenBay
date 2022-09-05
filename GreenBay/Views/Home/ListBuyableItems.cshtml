@@ -43,6 +43,11 @@
     <a class="tit" href="/bid">Bid</a>
 
     <h3>List of buyable products, ready for you, @ViewBag.name. You have @ViewBag.money Dollars.</h3>
+    <form method="get" action="/buyable">
+        <label for="search">Search Bar</label>
+        <input type="text" name="search" id="search" required>
+        <input type="submit" value="Search">
+    </form>
     <table>
         <tr>
             <th>Id</th>

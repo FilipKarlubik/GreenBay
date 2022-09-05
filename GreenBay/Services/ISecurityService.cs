@@ -17,5 +17,6 @@ namespace GreenBay.Services
         User GetUserFromDB(int id);
         int CheckJWTCookieValidityReturnsUserID(IRequestCookieCollection cookies);
         int ValidateToken(string token);
+        ResponseObject EncryptPasswords();
     }
 }

@@ -101,5 +101,22 @@ namespace GreenBay.Controllers
             ResponseObject response = _securityService.ValidateCredentials(user, credentials);
             return StatusCode(response.StatusCode, new { status = response.Message });
         }
+
+        [HttpPatch("encrypt_passwords")]
+        public ActionResult EncryptPasswords()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            User user = null;
+            if (identity.IsAuthenticated)
+            {
+                user = _securityService.DecodeUser(identity);
+            }
+            ResponseObject response = _securityService.EncryptPasswords();
+            if( response.StatusCode != 200 )
+            {
+                return StatusCode(response.StatusCode, new { error = response.Message });
+            }
+            return StatusCode(response.StatusCode, new { status = response.Message });
+        }
     }
 }

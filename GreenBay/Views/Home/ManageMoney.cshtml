@@ -1,11 +1,10 @@
 ﻿@using GreenBay.Models
-@model ResponseObject
-
+@model User
 <!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Create User Result Page</title>
+    <title>Manage Money</title>
     <style>
         .tit {
             border: dotted black;
@@ -28,16 +27,17 @@
     <a class="tit" href="/info">User Info</a>
     <a class="tit" href="/money">Manage Money</a>
 
-    <h3>Login User Result Page</h3>
-
-    @if (Model.StatusCode == 201)
-    {
-        <h4>User created, your token is :</h4>
-        <p>@ViewBag.token</p>
-    }
-    else
-    {
-        <h4 style ="color:red">@Model.Message</h4>
-    }
+    <h3>You can add or remove money from your GreenBay account, @ViewBag.name. You have @ViewBag.money Dollars.</h3>
+    <form method="post" action="/money">
+        <label for="action">Action</label>
+        <select id="action" name="action" required>
+            <option value="decrease">Take</option>
+            <option value="increase">Add</option>
+        </select><br />
+        <label for="amount">Amount</label>
+        <input id="amount" name="amount" type="number" min="1" required><br />
+        <input type="submit" value="OK" />
+        <a href="/">Cancel</a>
+    </form>
 </body>
 </html>

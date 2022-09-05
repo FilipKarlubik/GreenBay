@@ -37,7 +37,10 @@
     <a class="tit" href="/all">All Products</a>
     <a class="tit" href="/add">Add Product</a>
     <a class="tit" href="/email">Forgotten Password</a>
-    <h3>List of buyable products, ready for you, @ViewBag.name</h3>
+    <a class="tit" href="/info">User Info</a>
+    <a class="tit" href="/money">Manage Money</a>
+
+    <h3>List of buyable products, ready for you, @ViewBag.name. You have @ViewBag.money Dollars.</h3>
     <table>
         <tr>
             <th>Id</th>
@@ -65,6 +68,5 @@
         </tr>
         }
     </table>
-    <h3>You have @ViewBag.money Money</h3>
 </body>
 </html>

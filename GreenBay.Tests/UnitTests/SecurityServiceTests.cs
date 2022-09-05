@@ -34,7 +34,7 @@ namespace GreenBay.Tests.UnitTests
             emailService = new EmailService();
             securityService = new SecurityService(context, config, emailService);
 
-            context.Users.Add(new User() {Name = "Filip", Password = "f"
+            context.Users.Add(new User() {Name = "Filip", Password = "ZnN1cGVyU2VjdXJlU2VjcmVkS2V5IQ=="
                 , Email = "filip.karlubik@gmail.com", Role = "Admin", Dollars = 100 });
             context.SaveChanges();
         }

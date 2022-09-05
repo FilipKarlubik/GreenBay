@@ -42,7 +42,7 @@ namespace GreenBay.Services
             {
                 return new ResponseLoginObjectDto(404, $"User with name {userLogin.UserName} not found in database.");
             }
-            if (!currentUser.Password.Equals(userLogin.Password))
+            if (!currentUser.Password.Equals(Constants.EncryptPassword(userLogin.Password)))
             {
                 return new ResponseLoginObjectDto(409, "Given password is wrong.");
             }
@@ -179,7 +179,7 @@ namespace GreenBay.Services
                 }
 
                 email = userFromDB.Email;
-                password = userFromDB.Password;
+                password = Constants.DecryptPassword(userFromDB.Password);
                 name = userFromDB.Name;
                 _emailService.SendEmail(email, password, name);
 
@@ -195,7 +195,7 @@ namespace GreenBay.Services
                 }
 
                 email = userFromDB.Email;
-                password = userFromDB.Password;
+                password = Constants.DecryptPassword(userFromDB.Password);
                 name = userFromDB.Name;
                 _emailService.SendEmail(email, password, name);
 
@@ -249,6 +249,30 @@ namespace GreenBay.Services
             {
                 return -1;
             }
+        }
+
+        public ResponseObject EncryptPasswords()
+        {
+            int nonEncrypted = 0;
+            foreach (User user in _db.Users)
+            {
+                try
+                {
+                    user.Password = Constants.DecryptPassword(user.Password);
+                }
+                catch
+                {
+                    nonEncrypted++;
+                }
+                finally
+                {
+                    user.Password = Constants.EncryptPassword(user.Password);
+                    
+                }
+                _db.Users.Update(user);
+            }
+            _db.SaveChanges();
+            return new ResponseObject(200, $"{nonEncrypted} passwords were encrypted.");
         }
     }
 }

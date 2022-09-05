@@ -24,7 +24,7 @@ namespace GreenBay.Services
             if (userCreate.Role.ToLower() == "admin") role = "admin";
             User user = new User()
             {
-                Name = userCreate.UserName,Password = userCreate.Password,Email = userCreate.Email        
+                Name = userCreate.UserName,Password = Constants.EncryptPassword(userCreate.Password),Email = userCreate.Email        
             , Dollars = userCreate.Dollars, Role = role};
 
             _db.Users.Add(user);

@@ -88,8 +88,8 @@ namespace GreenBay.Controllers
             return NotFound(new { error = "User not found." });
         }
 
-        [HttpPost("email")] // send an email with credentials
         [AllowAnonymous]
+        [HttpPost("email")] // send an email with credentials    
         public ActionResult SendEmail([FromBody] Credentials credentials)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -99,6 +99,24 @@ namespace GreenBay.Controllers
                 user = _securityService.DecodeUser(identity);
             }
             ResponseObject response = _securityService.ValidateCredentials(user, credentials);
+            return StatusCode(response.StatusCode, new { status = response.Message });
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPatch("encrypt_passwords")]
+        public ActionResult EncryptPasswords()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            User user = null;
+            if (identity.IsAuthenticated)
+            {
+                user = _securityService.DecodeUser(identity);
+            }
+            ResponseObject response = _securityService.EncryptPasswords();
+            if( response.StatusCode != 200 )
+            {
+                return StatusCode(response.StatusCode, new { error = response.Message });
+            }
             return StatusCode(response.StatusCode, new { status = response.Message });
         }
     }

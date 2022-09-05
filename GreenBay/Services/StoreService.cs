@@ -2,6 +2,7 @@
 using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GreenBay.Services
@@ -105,6 +106,16 @@ namespace GreenBay.Services
             {
                 return new ResponseObject(400, "Not alowed action " + dollars.Action);
             }
+        }
+
+        public List<ItemInfoDto> SearchText(List<ItemInfoDto> items, string search)
+        {
+            search = search.ToLower();
+            return items.Where(i => i.Name.ToLower().Contains(search)
+            || i.Description.ToLower().Contains(search)
+            || i.SellingBy.ToLower().Contains(search)
+            || i.BoughtBy.ToLower().Contains(search)
+            || i.HighestBidBy.ToLower().Contains(search)).ToList();
         }
     }
 }

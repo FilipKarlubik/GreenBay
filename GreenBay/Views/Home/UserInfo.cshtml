@@ -1,0 +1,201 @@
+﻿@using GreenBay.Models.DTOs
+@model UserInfoFullDto
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Show All Items</title>
+    <style>
+        .tit {
+            border: dotted black;
+            padding: 5px;
+            background-color: darkgrey;
+            text-decoration: none;
+            color: black;
+        }
+
+        .circular_image {
+            float: left;
+            height: 100px;
+            border: 5px;
+            overflow: hidden;
+            border-radius: 50%;
+            width: 100px;
+            border: solid blue;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+    <a class="tit" href=" /">Home</a>
+    <a class="tit" href="/create">Create new User</a>
+    <a class="tit" href="/login">Login</a>
+    <a class="tit" href="/buyable">Only Buyable Products</a>
+    <a class="tit" href="/sellable">Only Not Sold Products</a>
+    <a class="tit" href="/all">All Products</a>
+    <a class="tit" href="/add">Add Product</a>
+    <a class="tit" href="/email">Forgotten Password</a>
+    <a class="tit" href="/info">User Info</a>
+    <a class="tit" href="/money">Manage Money</a>
+
+    <h3>Detailed information about user @Model.UserName.</h3>
+    <table>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Dollars</th>
+            <th>CreatedAt</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Sold</th>
+            <th>Bought</th>
+            <th>Selling</th>
+            <th>Buying</th>
+        </tr>
+        <tr>
+            <td>@Model.Id</td>
+            <td>@Model.UserName</td>
+            <td>@Model.Dollars</td>
+            <td>@Model.CreatedAt</td>
+            <td>@Model.Email</td>
+            <td>@Model.Role</td>
+            <td>@Model.ItemsSold.Count</td>
+            <td>@Model.ItemsBought.Count</td>
+            <td>@Model.ItemsTryingToSell.Count</td>
+            <td>@Model.ItemsTryingToBuy.Count</td>   
+        </tr>
+    </table>
+    @if (Model.ItemsSold.Count > 0)
+    {
+        <h4>Items Sold</h4>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
+                <th>HighestBid</th>
+                <th>HighestBidBy</th>
+                <th>BoughtBy</th>
+            </tr>
+            @foreach (var item in Model.ItemsSold)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.Price</td>
+                    <td><img class="circular_image" src="@item.ImageUrl"></td>
+                    <td>@item.SellingBy</td>
+                    <td>@item.HighestBid</td>
+                    <td>@item.HighestBidBy</td>
+                    <td>@item.BoughtBy</td>
+                </tr>
+            }
+        </table>
+    }
+    @if (Model.ItemsBought.Count > 0)
+    {
+        <h4>Items Bought</h4>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
+                <th>HighestBid</th>
+                <th>HighestBidBy</th>
+                <th>BoughtBy</th>
+            </tr>
+            @foreach (var item in Model.ItemsBought)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.Price</td>
+                    <td><img class="circular_image" src="@item.ImageUrl"></td>
+                    <td>@item.SellingBy</td>
+                    <td>@item.HighestBid</td>
+                    <td>@item.HighestBidBy</td>
+                    <td>@item.BoughtBy</td>
+                </tr>
+            }
+        </table>
+    }
+    @if (Model.ItemsTryingToSell.Count > 0)
+    {
+        <h4>Items Selling</h4>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
+                <th>HighestBid</th>
+                <th>HighestBidBy</th>
+            </tr>
+            @foreach (var item in Model.ItemsTryingToSell)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.Price</td>
+                    <td><img class="circular_image" src="@item.ImageUrl"></td>
+                    <td>@item.SellingBy</td>
+                    <td>@item.HighestBid</td>
+                    <td>@item.HighestBidBy</td>
+                </tr>
+            }
+        </table>
+    }
+    @if (Model.ItemsTryingToBuy.Count > 0)
+    {
+        <h4>Items Buying</h4>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>CreatedAt</th>
+                <th>Price</th>
+                <th>Image</th>
+                <th>SellingBy</th>
+                <th>HighestBid</th>
+                <th>HighestBidBy</th>
+            </tr>
+            @foreach (var item in Model.ItemsTryingToBuy)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.CreatedAt</td>
+                    <td>@item.Price</td>
+                    <td><img class="circular_image" src="@item.ImageUrl"></td>
+                    <td>@item.SellingBy</td>
+                    <td>@item.HighestBid</td>
+                    <td>@item.HighestBidBy</td>
+                </tr>
+            }
+        </table>
+    }
+</body>
+</html>

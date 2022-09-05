@@ -186,5 +186,57 @@ namespace GreenBay.Controllers
             ResponseObject result = _securityService.ValidateCredentials(null, credentials);
             return View(result);
         }
+
+        [HttpGet("/info")]
+        public IActionResult UserInfo()
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            UserInfoFullDto result = _sellService.UserInfoDetailed(user.Id, null);
+            return View(result);
+        }
+
+        [HttpGet("/money")]
+        public IActionResult ManageMoney()
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            ViewBag.name = user.Name;
+            ViewBag.money = user.Dollars;
+            return View(user);
+        }
+
+        [HttpPost("/money")]
+        public IActionResult ManageMoneyResult(string action, int amount)
+        {
+            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return BadRequest("Unauthorized");
+            }
+            User user = _securityService.GetUserFromDB(userID);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            var result = _storeService.ManageMoney(new DollarsManage(amount, action), user.Id);   
+            return View(result);
+        }
     }
 }

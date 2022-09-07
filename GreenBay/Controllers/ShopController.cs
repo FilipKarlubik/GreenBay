@@ -31,7 +31,7 @@ namespace GreenBay.Controllers
         {
             if (HttpContext.User.Identity is ClaimsIdentity)
             {
-                return Ok(_sellService.ListAllItems(page, itemCount));
+                return Ok(_sellService.ListAllItems(page, itemCount, null));
             }
             return Unauthorized(new { error = "Not valid token" });
         }
@@ -42,7 +42,7 @@ namespace GreenBay.Controllers
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok(_sellService.ListAllBuyableItems(user.Id, page, itemCount));
+                return Ok(_sellService.ListAllBuyableItems(user.Id, page, itemCount, null));
             }
             return Unauthorized(new { error = "Not valid token" });
         }
@@ -53,7 +53,7 @@ namespace GreenBay.Controllers
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
                 User user = _securityService.DecodeUser(identity);
-                return Ok(_sellService.ListAllSellableItems(user.Id, page, itemCount));
+                return Ok(_sellService.ListAllSellableItems(user.Id, page, itemCount, null));
             }
             return Unauthorized(new { error = "Not valid token" });
         }

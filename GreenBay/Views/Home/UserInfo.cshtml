@@ -28,6 +28,10 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+        
+        h4 {
+            margin-bottom: 0px;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +75,46 @@
             <td>@Model.ItemsTryingToBuy.Count</td>   
         </tr>
     </table>
+    <p></p>
+    <form class="inline" method="post" action="/sort_by">
+        <input type="text" name="redirectTo" value="UserInfo" hidden />
+        <label for="sortBy">Sort From</label>
+        <select id="sortBy" name="sortBy" required>
+            @if (ViewBag.sortBy == "latest")
+            {
+                <option value="latest" selected>Latest</option>
+            }
+            else
+            {
+                <option value="latest">Latest</option>
+            }
+            @if (ViewBag.sortBy == "oldest")
+            {
+                <option value="oldest" selected>Oldest</option>
+            }
+            else
+            {
+                <option value="oldest">Oldest</option>
+            }
+            @if (ViewBag.sortBy == "cheapest")
+            {
+                <option value="cheapest" selected>Cheapest</option>
+            }
+            else
+            {
+                <option value="cheapest">Cheapest</option>
+            }
+            @if (ViewBag.sortBy == "expensive")
+            {
+                <option value="expensive" selected>Expensive</option>
+            }
+            else
+            {
+                <option value="expensive">Expensive</option>
+            }
+        </select>
+        <input type="submit" value="Set" />
+    </form>
     @if (Model.ItemsSold.Count > 0)
     {
         <h4>Items Sold</h4>

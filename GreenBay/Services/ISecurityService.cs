@@ -20,5 +20,6 @@ namespace GreenBay.Services
         ResponseObject EncryptPasswords();
         int ReadPageFromCookies(IRequestCookieCollection cookies);
         int ReadItemCountFromCookies(IRequestCookieCollection cookies);
+        string ReadSortByFromCookies(IRequestCookieCollection cookies);
     }
 }

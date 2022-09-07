@@ -71,15 +71,54 @@
         <input type="submit" value="Search" />
     </form>
     <form class="inline" method="post" action="/set_page">
-        <label for="page">Set Page</label>
+        <label for="page">Page</label>
         <input type="number" name="page" id="page" value="@ViewBag.page" min="1" style="width: 4em" required />
         <input type="text" name="redirectTo" value="ListAllItems" hidden/>
         <input type="submit" value="Set" />
     </form>
     <form class="inline" method="post" action="/set_item_count">
-        <label for="itemCount">Set Count</label>
+        <label for="itemCount">Count</label>
         <input type="number" name="itemCount" id="itemCount" value="@ViewBag.itemCount" min="1" style="width: 4em" required />
         <input type="text" name="redirectTo" value="ListAllItems" hidden />
+        <input type="submit" value="Set" />
+    </form>
+    <form class="inline" method="post" action="/sort_by">
+        <input type="text" name="redirectTo" value="ListAllItems" hidden />
+        <label for="sortBy">Sort From</label>
+        <select id="sortBy" name="sortBy" required>
+            @if (ViewBag.sortBy == "latest")
+            {
+                <option value="latest" selected>Latest</option>
+            }
+            else
+            {
+                <option value="latest">Latest</option>
+            }
+            @if (ViewBag.sortBy == "oldest")
+            {
+                 <option value="oldest" selected>Oldest</option>
+            }
+            else
+            {
+                <option value="oldest">Oldest</option>
+            }
+            @if (ViewBag.sortBy == "cheapest")
+            {
+                <option value="cheapest" selected>Cheapest</option>
+            }
+            else
+            {
+                <option value="cheapest">Cheapest</option>
+            }
+            @if (ViewBag.sortBy == "expensive")
+            {
+                <option value="expensive" selected>Expensive</option>
+            }
+            else
+            {
+                <option value="expensive">Expensive</option>
+            }
+        </select>
         <input type="submit" value="Set" />
     </form>
     <table>

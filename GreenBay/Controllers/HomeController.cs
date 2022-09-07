@@ -43,6 +43,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
+            string sortBy = _securityService.ReadSortByFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized, please log in.");
@@ -55,17 +56,18 @@ namespace GreenBay.Controllers
             List<ItemInfoDto> items;
             if (search == null || search == String.Empty)
             {
-                items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
+                items = _sellService.ListAllBuyableItems(user.Id, page, itemCount, sortBy);
             }
             else
             {
-                items = _sellService.ListAllBuyableItems(user.Id, 1, int.MaxValue);
+                items = _sellService.ListAllBuyableItems(user.Id, 1, int.MaxValue, sortBy);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             ViewBag.page = page;
             ViewBag.itemCount = itemCount;
+            ViewBag.sortBy = sortBy;
             return View(items);
         }
 
@@ -75,6 +77,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
+            string sortBy = _securityService.ReadSortByFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized, please log in.");
@@ -87,17 +90,18 @@ namespace GreenBay.Controllers
             List<ItemInfoDto> items;
             if (search == null || search == String.Empty)
             {
-                items = _sellService.ListAllItems(page, itemCount);
+                items = _sellService.ListAllItems(page, itemCount, sortBy);
             }
             else
             {
-                items = _sellService.ListAllItems(1, int.MaxValue);
+                items = _sellService.ListAllItems(1, int.MaxValue, sortBy);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             ViewBag.page = page;
             ViewBag.itemCount = itemCount;
+            ViewBag.sortBy = sortBy;
             return View(items);
         }
 
@@ -107,6 +111,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
+            string sortBy = _securityService.ReadSortByFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized, please log in.");
@@ -119,17 +124,18 @@ namespace GreenBay.Controllers
             List<ItemInfoDto> items;
             if (search == null || search == String.Empty)
             {
-                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+                items = _sellService.ListAllSellableItems(user.Id, page, itemCount, sortBy);
             }
             else
             {
-                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
+                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue, sortBy);
                 items = _storeService.SearchText(items, search);
             }   
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
             ViewBag.page = page;
             ViewBag.itemCount = itemCount;
+            ViewBag.sortBy = sortBy;
             return View(items);
         }
 
@@ -226,6 +232,7 @@ namespace GreenBay.Controllers
         [HttpGet("/info")]
         public IActionResult UserInfo()
         {
+            string sortBy = _securityService.ReadSortByFromCookies(HttpContext.Request.Cookies);
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
@@ -236,7 +243,8 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            UserInfoFullDto result = _sellService.UserInfoDetailed(user.Id, null);
+            UserInfoFullDto result = _sellService.UserInfoDetailed(user.Id, null, sortBy);
+            ViewBag.sortBy = sortBy;
             return View(result);
         }
 
@@ -386,6 +394,19 @@ namespace GreenBay.Controllers
             }
             IResponseCookies cookies = HttpContext.Response.Cookies;
             cookies.Append("ItemCount", itemCount.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            return RedirectToAction(redirectTo);
+        }
+
+        [HttpPost("/sort_by")]
+        public IActionResult SortBy(string sortBy, string redirectTo)
+        {
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized, please log in.");
+            }
+            IResponseCookies cookies = HttpContext.Response.Cookies;
+            cookies.Append("SortBy", sortBy, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             return RedirectToAction(redirectTo);
         }
     }

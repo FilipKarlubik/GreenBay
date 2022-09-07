@@ -79,7 +79,7 @@ namespace GreenBay.Controllers
             User user = _securityService.DecodeUser(identity);
             if (user != null)
             {
-                return Ok(_sellService.UserInfoDetailed(user.Id, token));
+                return Ok(_sellService.UserInfoDetailed(user.Id, token, null));
             }
             return NotFound(new { error = "User not found." });
         }

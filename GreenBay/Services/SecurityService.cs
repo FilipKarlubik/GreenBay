@@ -235,6 +235,13 @@ namespace GreenBay.Services
             return Int32.Parse(cookies["ItemCount"]);
         }
 
+        public string ReadSortByFromCookies(IRequestCookieCollection cookies)
+        {
+            if (cookies == null) return "latest";
+            if (!cookies.ContainsKey("SortBy")) return "latest";
+            return cookies["SortBy"];
+        }
+
         public int ValidateToken(string token)
         {
             if (token == null || token == String.Empty)

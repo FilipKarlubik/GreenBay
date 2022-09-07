@@ -3,6 +3,7 @@ using GreenBay.Models;
 using GreenBay.Models.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace GreenBay.Services
@@ -16,10 +17,10 @@ namespace GreenBay.Services
             _db = db;
         }
 
-        public List<ItemInfoDto> ListAllBuyableItems(int id, int page, int itemCount)
+        public List<ItemInfoDto> ListAllBuyableItems(int id, int page, int itemCount, string sortBy)
         {
             int dollars = _db.Users.FirstOrDefault(u => u.Id.Equals(id)).Dollars;
-            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
+            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue, sortBy);
             items = items.Where(i => i.BoughtById.Equals(0) && i.HighestBid + 1 < dollars && i.SellingById != id).ToList();
             if (itemCount < 1)
             {
@@ -41,15 +42,29 @@ namespace GreenBay.Services
                     page = totalCount / itemCount + 1;
                 }
             }
-            return items
-                .OrderByDescending(u => u.Id).Skip((page - 1) * itemCount)
-                .Take(itemCount).ToList();
+            if (sortBy == "oldest")
+            {
+                items = items.OrderBy(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if (sortBy == "cheapest")
+            {
+                items = items.OrderBy(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if (sortBy == "expensive")
+            {
+                items = items.OrderByDescending(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else
+            {
+                items = items.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            return items;
         }
 
-        public List<ItemInfoDto> ListAllSellableItems(int id, int page, int itemCount)
+        public List<ItemInfoDto> ListAllSellableItems(int id, int page, int itemCount, string sortBy)
         {
             int dollars = _db.Users.FirstOrDefault(u => u.Id.Equals(id)).Dollars;
-            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
+            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue, sortBy);
             items = items.Where(i => i.BoughtById.Equals(0)).ToList();
             if (itemCount < 1)
             {
@@ -71,12 +86,27 @@ namespace GreenBay.Services
                     page = totalCount / itemCount + 1;
                 }
             }
-            return items
-                .OrderByDescending(u => u.Id).Skip((page - 1) * itemCount)
-                .Take(itemCount).ToList();
+            if (sortBy == "oldest")
+            {
+                items = items.OrderBy(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if (sortBy == "cheapest")
+            {
+                items = items.OrderBy(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if (sortBy == "expensive")
+            {
+                items = items.OrderByDescending(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else
+            {
+                items = items.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            return items;
+                
         }
 
-        public List<ItemInfoDto> ListAllItems(int page, int itemCount)
+        public List<ItemInfoDto> ListAllItems(int page, int itemCount, string sortBy)
         {
             if (itemCount < 1)
             {
@@ -98,7 +128,23 @@ namespace GreenBay.Services
                     page = totalCount / itemCount + 1;
                 }
             }
-            List<Item> itemsInDb = _db.Items.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            List<Item> itemsInDb;
+            if (sortBy == "oldest")
+            {
+                itemsInDb = _db.Items.OrderBy(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if(sortBy == "cheapest")
+            {
+                itemsInDb = _db.Items.OrderBy(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else if (sortBy == "expensive")
+            {
+                itemsInDb = _db.Items.OrderByDescending(u => u.Price).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
+            else
+            {
+                itemsInDb = _db.Items.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
+            }
             List<ItemInfoDto> items = new();
             foreach (var item in itemsInDb)
             {  
@@ -107,10 +153,10 @@ namespace GreenBay.Services
             return items;
         }
 
-        public UserInfoFullDto UserInfoDetailed(int id, string token)
+        public UserInfoFullDto UserInfoDetailed(int id, string token, string sortBy)
         {
             User user = _db.Users.FirstOrDefault(u => u.Id == id);
-            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
+            List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue, sortBy);
             if (user == null) return null;
             return new UserInfoFullDto(user.Id, user.Name, user.Password,user.Email, user.Dollars
                 , user.Role, user.CreatedAt

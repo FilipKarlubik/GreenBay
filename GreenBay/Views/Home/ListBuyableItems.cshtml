@@ -36,6 +36,10 @@
             width: auto;
             list-style: outside none none;
         }
+
+        body {
+            background-color: antiquewhite
+        }
     </style>
 </head>
 <body>
@@ -140,7 +144,7 @@
             <td>@item.Description</td>
             <td>@item.CreatedAt</td>
             <td>@item.Price</td>
-            <td><img class="circular_image" src="@item.ImageUrl"></td>
+            <td><a href="@item.ImageUrl"><img class="circular_image" src="@item.ImageUrl"></a></td>
             <td>@item.SellingBy</td>
             <td>@item.HighestBid</td>
             <td>@item.HighestBidBy</td>

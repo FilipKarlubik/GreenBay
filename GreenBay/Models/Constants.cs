@@ -8,7 +8,7 @@ namespace GreenBay.Models
     {
         private const string Key = "superSecureSecredKey!";
         
-        public static List<User> Users = new List<User>()
+        public static readonly List<User> Users = new()
         { 
             new User() {Name = "Filip", Email = "filip.karlubik@gmail.com", Password = "f", Role = "admin", Dollars = 1000},
             new User() {Name = "Tom", Email = "thomas@gmail.com", Password = "t", Role = "user", Dollars = 100},
@@ -16,7 +16,7 @@ namespace GreenBay.Models
             new User() {Name = "Butch", Email = "possy_cat@gmail.com", Password = "b", Role = "user", Dollars = 50}
         };
         
-        public static List<Item> Items = new List<Item>() {
+        public static  readonly List<Item> Items = new() {
             new Item() {Name = "Sausage", Description = "1kg, fresh good taste :)", UserId = 1, Price = 9
                 , ImageUrl = "https://image.shutterstock.com/image-photo/grilled-bratwurst-pork-sausages-basil-260nw-1406560712.jpg" },
             new Item() {Name = "Cheese", Description = "200g Healthy delicious :D", UserId = 2, Price = 7
@@ -36,7 +36,7 @@ namespace GreenBay.Models
             if (string.IsNullOrEmpty(base64EncodeData)) return "";
             var base64EncodeBytes = Convert.FromBase64String(base64EncodeData);
             var result = Encoding.UTF8.GetString(base64EncodeBytes);
-            return result.Substring(0, result.Length - Key.Length);
+            return result[..^Key.Length];
         }
     }
 }

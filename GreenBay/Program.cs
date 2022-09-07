@@ -62,7 +62,7 @@ namespace GreenBay
                 {
                     Version = "v1",
                     Title = "GreenBay API",
-                    Description = "Test Api Endpoints"
+                    Description = "Test Api/Mvc Endpoints"
                 });
                 s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -129,12 +129,16 @@ namespace GreenBay
                     var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
                     //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
                     context.Database.EnsureCreated();
-                    if (context.Items.Any())
+                    if (!context.Users.Any())
                     {
-                        context.Users.AddRange(Constants.Users);
+                        foreach (User user in Constants.Users)
+                        {
+                            user.Password = Constants.EncryptPassword(user.Password);
+                            context.Users.Add(user);
+                        }
                         context.SaveChanges();
                     }
-                    if (context.Items.Any())
+                    if (!context.Items.Any())
                     {
                         context.Items.AddRange(Constants.Items);
                         context.SaveChanges();

@@ -11,6 +11,10 @@
             text-decoration: none;
             color: black;
         }
+
+        body {
+            background-color: antiquewhite
+        }
     </style>
 </head>
 <body>
@@ -30,7 +34,7 @@
     <h3>Enter Your Email Address to send your login and password</h3>
     <form method="post" action="/email">
         <label for="email">Your email address :</label>
-        <input type="email" id="email" name="email" style="width: 4em" required>
+        <input type="email" id="email" name="email" required>
         <input type="submit" value="Send Email">
     </form>
     <a href="/"> <button>Cancel</button></a>

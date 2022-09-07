@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using GreenBay.Models;
+using Microsoft.OpenApi.Models;
 
 namespace GreenBay
 {
@@ -55,6 +56,37 @@ namespace GreenBay
             builder.Services.AddMvc();
             builder.Services.AddControllers();
             builder.Services.AddRazorPages();
+            builder.Services.AddSwaggerGen(s =>
+            {
+                s.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "GreenBay API",
+                    Description = "Test Api/Mvc Endpoints"
+                });
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert Token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement 
+                {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    }, Array.Empty<string>()
+                }
+                });
+            });
 
             builder.Services.AddTransient<ISecurityService, SecurityService>();
             builder.Services.AddTransient<IStoreService, StoreService>();
@@ -67,7 +99,11 @@ namespace GreenBay
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
+                app.UseSwagger();
+                app.UseSwaggerUI(s =>
+                {
+                    s.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenBay API");
+                });
             }
             else
             {
@@ -93,12 +129,16 @@ namespace GreenBay
                     var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationContext>();
                     //context.Database.EnsureDeleted(); // uncomment if you want to restore with basic params
                     context.Database.EnsureCreated();
-                    if (context.Users.Count() == 0)
+                    if (!context.Users.Any())
                     {
-                        context.Users.AddRange(Constants.Users);
+                        foreach (User user in Constants.Users)
+                        {
+                            user.Password = Constants.EncryptPassword(user.Password);
+                            context.Users.Add(user);
+                        }
                         context.SaveChanges();
                     }
-                    if (context.Items.Count() == 0)
+                    if (!context.Items.Any())
                     {
                         context.Items.AddRange(Constants.Items);
                         context.SaveChanges();

@@ -44,7 +44,7 @@ namespace GreenBay.Tests.UnitTests
         public async Task CreateUser_InputValidSchouldWork()
         {
             //Arrange     
-            UserCreate userCreate = new UserCreate()
+            UserCreate userCreate = new()
             { UserName = "Filip", Dollars = 100
             , Email = "filip.karlubik@gmail.com"
             , Role = "admin", Password = "f"};
@@ -67,7 +67,7 @@ namespace GreenBay.Tests.UnitTests
         public async Task CreateUser_RoleNotSpecifiedSchouldBeUser()
         {
             //Arrange     
-            UserCreate userCreate = new UserCreate()
+            UserCreate userCreate = new()
             {
                 UserName = "Filip",
                 Dollars = 100 ,
@@ -98,7 +98,7 @@ namespace GreenBay.Tests.UnitTests
             context.Users.Add(new User());
             context.SaveChanges();
             User user = await context.Users.FirstAsync();
-            ItemCreate itemCreate = new ItemCreate()
+            ItemCreate itemCreate = new()
             {
                 Name = name,
                 Description = description,
@@ -119,14 +119,14 @@ namespace GreenBay.Tests.UnitTests
             context.Users.Add(new User());
             context.SaveChanges();
             User user = await context.Users.FirstAsync();
-            ItemCreate itemCreate = new ItemCreate()
+            ItemCreate itemCreate = new()
             {
                 Name = "X",
                 Description = "X",
                 ImageUrl = "https://www.google.com/",
                 Price = 1
             };
-            ItemCreate itemCreateDuplicName = new ItemCreate()
+            ItemCreate itemCreateDuplicName = new()
             {
                 Name = "X",
                 Description = "none",
@@ -145,9 +145,11 @@ namespace GreenBay.Tests.UnitTests
         public void CreateItem_CreateWithNonExistingUserSchouldFail()
         {
             //Arrange       
-            User user = new User();
-            user.Id = 5;
-            ItemCreate itemCreate = new ItemCreate()
+            User user = new()
+            {
+                Id = 5
+            };
+            ItemCreate itemCreate = new()
             {
                 Name = "X",
                 Description = "X",
@@ -171,9 +173,11 @@ namespace GreenBay.Tests.UnitTests
         public void ManageMoney_VariousParams(string action,int amount, int expectedStatusCode)
         {
             //Arrange
-            DollarsManage dollarsManage = new DollarsManage();
-            dollarsManage.Action = action;
-            dollarsManage.Amount = amount;
+            DollarsManage dollarsManage = new() 
+            {
+                Action = action,
+                Amount = amount
+            };
             context.Users.Add(new User() { 
             Dollars = 100});
             context.SaveChanges();

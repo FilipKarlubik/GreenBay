@@ -1,20 +1,8 @@
-﻿using Castle.Core.Configuration;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using Xunit;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.Hosting;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using GreenBay.Context;
-using System.Threading.Tasks;
 using System.Text.Json;
 using GreenBay.Models;
-using GreenBay.Models.DTOs;
 using System.Net.Http.Json;
 
 namespace GreenBay.Tests.IntegrationTests

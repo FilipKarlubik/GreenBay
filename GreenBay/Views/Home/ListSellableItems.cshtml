@@ -1,4 +1,8 @@
-﻿@using GreenBay.Models.DTOs
+﻿@{
+    int next = ViewBag.page + 1;
+    int previous = ViewBag.page - 1;
+}
+@using GreenBay.Models.DTOs
 @model IEnumerable<ItemInfoDto>
 <!DOCTYPE html>
 <html>
@@ -28,6 +32,12 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+
+        .inline {
+            display: inline-block;
+            width: auto;
+            list-style: outside none none;
+        }
     </style>
 </head>
 <body>
@@ -45,10 +55,32 @@
     <a class="tit" href="/bid">Bid</a>
 
     <h3>List of sellable products, just to choose some, @ViewBag.name. You have @ViewBag.money Dollars.</h3>
-    <form method="get" action="/sellable">
+    <form class="inline" method="post" action="/set_page">
+        <input type="number" name="page" id="page" value="@previous" min="1" hidden />
+        <input type="text" name="redirectTo" value="ListSellableItems" hidden />
+        <input type="submit" value="Prev Page" />
+    </form>
+    <form class="inline" method="post" action="/set_page">
+        <input type="number" name="page" id="page" value="@next" min="1" hidden />
+        <input type="text" name="redirectTo" value="ListSellableItems" hidden />
+        <input type="submit" value="Next Page" />
+    </form>
+    <form class="inline" method="get" action="/sellable">
         <label for="search">Search Bar</label>
         <input type="text" name="search" id="search" required>
         <input type="submit" value="Search">
+    </form>
+    <form class="inline" method="post" action="/set_page">
+        <label for="page">Set Page</label>
+        <input type="number" name="page" id="page" value="@ViewBag.page" min="1" style="width: 4em" required  />
+        <input type="text" name="redirectTo" value="ListSellableItems" hidden />
+        <input type="submit" value="Set" />
+    </form>
+    <form class="inline" method="post" action="/set_item_count">
+        <label for="itemCount">Set Count</label>
+        <input type="number" name="itemCount" id="itemCount" value="@ViewBag.itemCount" min="1" style="width: 4em" required />
+        <input type="text" name="redirectTo" value="ListSellableItems" hidden />
+        <input type="submit" value="Set" />
     </form>
     <table>
         <tr>

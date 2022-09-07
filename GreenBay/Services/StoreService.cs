@@ -23,7 +23,7 @@ namespace GreenBay.Services
         {
             string role = "user";
             if (userCreate.Role.ToLower() == "admin") role = "admin";
-            User user = new User()
+            User user = new()
             {
                 Name = userCreate.UserName,Password = Constants.EncryptPassword(userCreate.Password),Email = userCreate.Email        
             , Dollars = userCreate.Dollars, Role = role};
@@ -51,8 +51,7 @@ namespace GreenBay.Services
             {
                 return new ResponseItemObjectDto(400, "Not valid description.");
             }
-            Uri uriResult;
-            bool validUrl = Uri.TryCreate(itemNew.ImageUrl, UriKind.Absolute, out uriResult)
+            bool validUrl = Uri.TryCreate(itemNew.ImageUrl, UriKind.Absolute, out Uri uriResult)
             && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
             if (validUrl == false)
             {

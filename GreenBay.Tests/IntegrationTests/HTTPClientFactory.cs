@@ -30,26 +30,24 @@ namespace GreenBay.Tests.IntegrationTests
                         options.UseInMemoryDatabase("InMemoryDB");
                     });
                     var sp = services.BuildServiceProvider();
-                    using (var scope = sp.CreateScope())
+                    using var scope = sp.CreateScope();
+                    var scopedServices = scope.ServiceProvider;
+                    var appDb = scopedServices.GetRequiredService<ApplicationContext>();
+                    //appDb.Database.EnsureDeleted();
+                    //appDb.Database.EnsureCreated();
+                    if (!appDb.Users.Any())
                     {
-                        var scopedServices = scope.ServiceProvider;
-                        var appDb = scopedServices.GetRequiredService<ApplicationContext>();
-                        //appDb.Database.EnsureDeleted();
-                        //appDb.Database.EnsureCreated();
-                        if (appDb.Users.Count() == 0)
+                        foreach (User user in Constants.Users)
                         {
-                            foreach (User user in Constants.Users)
-                            {
-                                user.Password = Constants.EncryptPassword(user.Password);
-                                appDb.Users.Add(user);
-                            }
-                            appDb.SaveChanges();
+                            user.Password = Constants.EncryptPassword(user.Password);
+                            appDb.Users.Add(user);
                         }
-                        if (appDb.Items.Count() == 0)
-                        {
-                            appDb.Items.AddRange(Constants.Items);
-                            appDb.SaveChanges();
-                        }
+                        appDb.SaveChanges();
+                    }
+                    if (!appDb.Items.Any())
+                    {
+                        appDb.Items.AddRange(Constants.Items);
+                        appDb.SaveChanges();
                     }
                 });
             });

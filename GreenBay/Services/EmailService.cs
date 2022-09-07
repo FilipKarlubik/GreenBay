@@ -2,8 +2,6 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System;
 
 namespace GreenBay.Services
 {

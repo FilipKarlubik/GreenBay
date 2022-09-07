@@ -47,7 +47,7 @@ namespace GreenBay.Services
                 return new ResponseLoginObjectDto(409, "Given password is wrong.");
             }
             string token = GenerateToken(currentUser);
-            ResponseLoginObjectOutputDto output = new ResponseLoginObjectOutputDto(
+            ResponseLoginObjectOutputDto output = new(
                 currentUser.Dollars, token);
 
             return new ResponseLoginObjectDto(200, "You have logged in.", output);
@@ -91,7 +91,7 @@ namespace GreenBay.Services
             return new ResponseObject(201, $"User {userCreate.UserName} has been created.");
         }
 
-        private bool EmailIsValid(string email)
+        private static bool EmailIsValid(string email)
         {
             var valid = true;
             try
@@ -148,7 +148,7 @@ namespace GreenBay.Services
                 else page = totalCount / itemCount + 1;
             }
             List<User> usersInDB = _db.Users.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
-            List<UserInfoDto> users = new List<UserInfoDto>();
+            List<UserInfoDto> users = new();
             foreach (User user in usersInDB)
             {
                 users.Add(new UserInfoDto(user.Id, user.Name, user.Password, user.Email
@@ -219,6 +219,20 @@ namespace GreenBay.Services
             if (idFromToken == -1) return -1;
             
             return idFromToken;
+        }
+
+        public int ReadPageFromCookies(IRequestCookieCollection cookies)
+        {
+            if (cookies == null) return 1;
+            if (!cookies.ContainsKey("Page")) return 1;  
+            return Int32.Parse(cookies["Page"]);
+        }
+
+        public int ReadItemCountFromCookies(IRequestCookieCollection cookies)
+        {
+            if (cookies == null) return 10;
+            if (!cookies.ContainsKey("ItemCount")) return 10;
+            return Int32.Parse(cookies["ItemCount"]);
         }
 
         public int ValidateToken(string token)

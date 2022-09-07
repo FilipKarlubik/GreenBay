@@ -46,7 +46,7 @@ namespace GreenBay.Controllers
             {
                 User user = _storeService.CreateUser(userCreate);
                 var token = _securityService.GenerateToken(user);
-                return StatusCode(response.StatusCode,new { status = response.Message, token = token });
+                return StatusCode(response.StatusCode,new { status = response.Message, token });
             }
             return StatusCode(response.StatusCode, new { error = response.Message });
         }
@@ -61,7 +61,7 @@ namespace GreenBay.Controllers
         [HttpPost("money")] // change your money amount - add or remove money
         public ActionResult MoneyChange([FromBody] DollarsManage dollars)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
             User user = _securityService.DecodeUser(identity);
             if (user != null)
             {
@@ -88,7 +88,7 @@ namespace GreenBay.Controllers
         [HttpPost("email")] // send an email with credentials    
         public ActionResult SendEmail([FromBody] Credentials credentials)
         {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            ClaimsIdentity identity = HttpContext.User.Identity as ClaimsIdentity;
             User user = null;
             if (identity.IsAuthenticated)
             {

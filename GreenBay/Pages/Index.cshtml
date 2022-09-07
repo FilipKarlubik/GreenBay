@@ -6,7 +6,7 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <h4>mvc endpoints: </h4>
+    <h4>Mvc Endpoints: </h4>
     <a href="/hello">/hello</a>
     <a href="/buyable">/buyable</a>
     <a href="/all">/all</a>
@@ -20,18 +20,19 @@
     <a href="/users">/users</a>
     <a href="/bid">/bid</a>
 
-    <h4>api endpoints: </h4>
-    <p>/user/login</p>
-    <p>/user/create</p>
-    <p>/user/money</p>
-    <p>/user/email</p>
-    <p>/user/show</p>
-    <p>/user/info</p>
-    <p>/shop/list</p>
-    <p>/shop/list/buyable</p>
-    <p>/shop/list/sellable</p>
-    <p>/shop/item</p>
-    <p>/shop/create</p>
-    <p>/shop/buy-withdraw</p>
-    <p>/shop/sell-withdraw</p>
+    <h4>Api Endpoints: {accepts JSON content, JWT authorization needed (except user login,create,email)}</h4>
+    <p>/user/login {POST} username, password</p>
+    <p>/user/create  {POST} username, password, email, role(admin or user), dollars(number)</p>
+    <p>/user/money {POST} amount(number), action(decrease or increase)</p>
+    <p>/user/email {POST} email, name(not needed) - sends forgotten credentials</p>
+    <p>/user/show  {GET} - users list, only for admin role</p>
+    <p>/user/info  {GET} - detailed info about user</p>
+    <p>/shop/bid  {POST} - itemid(number), bid(number)</p>
+    <p>/shop/list  {GET} - all items sold or bought, only for admin role</p>
+    <p>/shop/list/buyable  {GET} - items with no bid or smaller than your account size</p>
+    <p>/shop/list/sellable  {GET} - items not bought</p>
+    <p>/shop/item?id={number} {GET} - info about item</p>
+    <p>/shop/create {POST} name, description, price(number), imageurl</p>
+    <p>/shop/buy-withdraw {POST} id, action(buy or withdraw)</p>
+    <p>/shop/sell-withdraw {POST} id, action(sell or withdraw)</p>
 </div>

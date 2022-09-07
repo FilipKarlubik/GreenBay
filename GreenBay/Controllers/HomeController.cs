@@ -55,11 +55,11 @@ namespace GreenBay.Controllers
             List<ItemInfoDto> items;
             if (search == null || search == String.Empty)
             {
-                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+                items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
             }
             else
             {
-                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
+                items = _sellService.ListAllBuyableItems(user.Id, 1, int.MaxValue);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;
@@ -87,11 +87,11 @@ namespace GreenBay.Controllers
             List<ItemInfoDto> items;
             if (search == null || search == String.Empty)
             {
-                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+                items = _sellService.ListAllItems(page, itemCount);
             }
             else
             {
-                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
+                items = _sellService.ListAllItems(1, int.MaxValue);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;

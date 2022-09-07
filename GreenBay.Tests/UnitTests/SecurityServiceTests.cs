@@ -6,11 +6,9 @@ using GreenBay.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using Xunit;
 
 namespace GreenBay.Tests.UnitTests
@@ -62,7 +60,7 @@ namespace GreenBay.Tests.UnitTests
             , int expectedStatusCode, string expectedMessage)
         {
             //Arrange
-            UserLogin userlogin = new UserLogin() { UserName = userName, Password = password};
+            UserLogin userlogin = new() { UserName = userName, Password = password};
             
             //Act
             ResponseLoginObjectDto result = securityService.Authenticate(userlogin);
@@ -85,7 +83,7 @@ namespace GreenBay.Tests.UnitTests
             , string email, int dollars, int expectedStatusCode, string expectedMessage)
         {
             //Arrange
-            UserCreate userCreate = new UserCreate() { UserName = userName, Password = password 
+            UserCreate userCreate = new() { UserName = userName, Password = password 
                 , Email = email, Dollars = dollars};
 
             //Act
@@ -104,7 +102,7 @@ namespace GreenBay.Tests.UnitTests
 
             //Act
             string tokenString = securityService.GenerateToken(user);
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+            JwtSecurityToken token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
             var email = token.Claims.First(c => c.Type == ClaimTypes.Email).Value;
             //Assert
             Assert.NotNull(token);

@@ -31,16 +31,18 @@ namespace GreenBay.Controllers
         [HttpGet("/hello")]
         public IActionResult Hello()
         {
-            Random r = new Random();
+            Random r = new();
             List<User> users = _db.Users.ToList();
             User user = users.ElementAt(r.Next(users.Count));
             return View(user);
         }
 
         [HttpGet("/buyable")]
-        public IActionResult ListBuyableItems(int page, int itemCount, string search)
+        public IActionResult ListBuyableItems(string search)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
+            int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -50,20 +52,29 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            List<ItemInfoDto> items = _sellService.ListAllBuyableItems(user.Id, page, itemCount);
-            if(search != null && search != String.Empty)
+            List<ItemInfoDto> items;
+            if (search == null || search == String.Empty)
             {
+                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+            }
+            else
+            {
+                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
+            ViewBag.page = page;
+            ViewBag.itemCount = itemCount;
             return View(items);
         }
 
         [HttpGet("/all")]
-        public IActionResult ListAllItems(int page, int itemCount, string search)
+        public IActionResult ListAllItems(string search)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
+            int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -73,20 +84,29 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            List<ItemInfoDto> items = _sellService.ListAllItems(page, itemCount);
-            if (search != null && search != String.Empty)
+            List<ItemInfoDto> items;
+            if (search == null || search == String.Empty)
             {
+                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
+            }
+            else
+            {
+                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
                 items = _storeService.SearchText(items, search);
             }
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
+            ViewBag.page = page;
+            ViewBag.itemCount = itemCount;
             return View(items);
         }
 
         [HttpGet("/sellable")]
-        public IActionResult ListSellableItems(int page, int itemCount, string search)
+        public IActionResult ListSellableItems(string search)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int page = _securityService.ReadPageFromCookies(HttpContext.Request.Cookies);
+            int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -96,13 +116,20 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            List<ItemInfoDto> items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
-            if (search != null && search != String.Empty)
+            List<ItemInfoDto> items;
+            if (search == null || search == String.Empty)
             {
-                items = _storeService.SearchText(items, search);
+                items = _sellService.ListAllSellableItems(user.Id, page, itemCount);
             }
+            else
+            {
+                items = _sellService.ListAllSellableItems(user.Id, 1, int.MaxValue);
+                items = _storeService.SearchText(items, search);
+            }   
             ViewBag.money = user.Dollars;
             ViewBag.name = user.Name;
+            ViewBag.page = page;
+            ViewBag.itemCount = itemCount;
             return View(items);
         }
 
@@ -115,12 +142,12 @@ namespace GreenBay.Controllers
         [HttpPost("/login")]
         public IActionResult LoginResult(string name, string password)
         {
-            UserLogin userLogin = new UserLogin(name, password);
+            UserLogin userLogin = new(name, password);
             ResponseLoginObjectDto response = _securityService.Authenticate(userLogin);
             if (response.StatusCode == 200)
             {
-                var cookies = HttpContext.Response.Cookies;
-                var Token = response.ResponseLoginObjectOutput.Token;
+                IResponseCookies cookies = HttpContext.Response.Cookies;
+                string Token = response.ResponseLoginObjectOutput.Token;
                 cookies.Append("Authorization", Token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
             }
             return View(response);
@@ -135,14 +162,14 @@ namespace GreenBay.Controllers
         [HttpPost("/create")]
         public IActionResult CreateUserResult(string userName, string email, string password, string role, int dollars)
         {
-            UserCreate userCreate = new UserCreate(userName, email, password, role, dollars);
+            UserCreate userCreate = new(userName, email, password, role, dollars);
             ResponseObject response = _securityService.CheckDuplicity(userCreate);
             if (response.StatusCode == 201)
             {
                 User user = _storeService.CreateUser(userCreate);
-                var Token = _securityService.GenerateToken(user);
+                string Token = _securityService.GenerateToken(user);
                 ViewBag.token = Token;
-                var cookies = HttpContext.Response.Cookies;
+                IResponseCookies cookies = HttpContext.Response.Cookies;
                 cookies.Append("Authorization", Token, new CookieOptions() {HttpOnly = true, SameSite = SameSiteMode.Strict });
             }
             return View(response);
@@ -151,7 +178,7 @@ namespace GreenBay.Controllers
         [HttpGet("/add")]
         public IActionResult AddProduct()
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -167,7 +194,7 @@ namespace GreenBay.Controllers
         [HttpPost("/add")]
         public IActionResult AddProductResult(string name, string description, string imageUrl, int price)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -177,7 +204,7 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            ItemCreate item = new ItemCreate(name, description, imageUrl, price);
+            ItemCreate item = new(name, description, imageUrl, price);
             ResponseItemObjectDto response = _storeService.CreateItem(item, user);
             return View(response);
         }
@@ -191,7 +218,7 @@ namespace GreenBay.Controllers
         [HttpPost("/email")]
         public IActionResult SendEmailWithCredsResult(string email)
         {
-            Credentials credentials = new Credentials(email);
+            Credentials credentials = new(email);
             ResponseObject result = _securityService.ValidateCredentials(null, credentials);
             return View("ResponseObjectPage", result);
         }
@@ -199,7 +226,7 @@ namespace GreenBay.Controllers
         [HttpGet("/info")]
         public IActionResult UserInfo()
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -216,7 +243,7 @@ namespace GreenBay.Controllers
         [HttpGet("/money")]
         public IActionResult ManageMoney()
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -234,7 +261,7 @@ namespace GreenBay.Controllers
         [HttpPost("/money")]
         public IActionResult ManageMoneyResult(string action, int amount)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -244,14 +271,14 @@ namespace GreenBay.Controllers
             {
                 return NotFound("User not found");
             }
-            var result = _storeService.ManageMoney(new DollarsManage(amount, action), user.Id);   
+            ResponseObject result = _storeService.ManageMoney(new DollarsManage(amount, action), user.Id);   
             return View("ResponseObjectPage", result);
         }
 
         [HttpGet("/users")]
         public IActionResult AllUsersInfo(int page, int itemCount)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -272,7 +299,7 @@ namespace GreenBay.Controllers
         [HttpGet("/bid")]
         public IActionResult Bid()
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -288,7 +315,7 @@ namespace GreenBay.Controllers
         [HttpPost("/bid")]
         public IActionResult BidResult(int itemId, int bid)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -305,7 +332,7 @@ namespace GreenBay.Controllers
         [HttpPost("/sell-withdraw")]
         public IActionResult SellOrWithdraw(int itemId, string action)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -322,7 +349,7 @@ namespace GreenBay.Controllers
         [HttpPost("/buy-withdraw")]
         public IActionResult BuyOrWithdraw(int itemId, string action)
         {
-            var userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
                 return Unauthorized("Unauthorized");
@@ -334,6 +361,32 @@ namespace GreenBay.Controllers
             }
             ResponseObject result = _buyService.BuyOrWithdraw(new ItemAction(itemId, action), user);
             return View("ResponseObjectPage", result);
+        }
+
+        [HttpPost("/set_page")]
+        public IActionResult SetPage(int page, string redirectTo)
+        {
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            IResponseCookies cookies = HttpContext.Response.Cookies;
+            cookies.Append("Page", page.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            return RedirectToAction(redirectTo);
+        }
+
+        [HttpPost("/set_item_count")]
+        public IActionResult SetItemCount(int itemCount, string redirectTo)
+        {
+            int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
+            if (userID == -1)
+            {
+                return Unauthorized("Unauthorized");
+            }
+            IResponseCookies cookies = HttpContext.Response.Cookies;
+            cookies.Append("ItemCount", itemCount.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            return RedirectToAction(redirectTo);
         }
     }
 }

@@ -18,52 +18,88 @@ namespace GreenBay.Services
 
         public List<ItemInfoDto> ListAllBuyableItems(int id, int page, int itemCount)
         {
-            if (itemCount < 1) itemCount = 20;
-            if (page < 1) page = 1;
-            int totalCount = _db.Users.Count();
-            if (totalCount < page * itemCount)
-            {
-                if (totalCount % itemCount == 0) page = totalCount / itemCount;
-                else page = totalCount / itemCount + 1;
-            }
             int dollars = _db.Users.FirstOrDefault(u => u.Id.Equals(id)).Dollars;
             List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
-            
-            return items.Where(i => i.BoughtById.Equals(0) && i.HighestBid + 1 < dollars && i.SellingById != id)
+            items = items.Where(i => i.BoughtById.Equals(0) && i.HighestBid + 1 < dollars && i.SellingById != id).ToList();
+            if (itemCount < 1)
+            {
+                itemCount = 20;
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            int totalCount = items.Count;
+            if (totalCount < page * itemCount)
+            {
+                if (totalCount % itemCount == 0)
+                {
+                    page = totalCount / itemCount;
+                }
+                else
+                {
+                    page = totalCount / itemCount + 1;
+                }
+            }
+            return items
                 .OrderByDescending(u => u.Id).Skip((page - 1) * itemCount)
                 .Take(itemCount).ToList();
         }
 
         public List<ItemInfoDto> ListAllSellableItems(int id, int page, int itemCount)
         {
-            if (itemCount < 1) itemCount = 20;
-            if (page < 1) page = 1;
-            int totalCount = _db.Users.Count();
-            if (totalCount < page * itemCount)
-            {
-                if (totalCount % itemCount == 0) page = totalCount / itemCount;
-                else page = totalCount / itemCount + 1;
-            }
             int dollars = _db.Users.FirstOrDefault(u => u.Id.Equals(id)).Dollars;
             List<ItemInfoDto> items = ListAllItems(1, Int32.MaxValue);
-            
-            return items.Where(i => i.BoughtById.Equals(0))
+            items = items.Where(i => i.BoughtById.Equals(0)).ToList();
+            if (itemCount < 1)
+            {
+                itemCount = 20;
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
+            int totalCount = items.Count;
+            if (totalCount < page * itemCount)
+            {
+                if (totalCount % itemCount == 0)
+                {
+                    page = totalCount / itemCount;
+                }
+                else
+                {
+                    page = totalCount / itemCount + 1;
+                }
+            }
+            return items
                 .OrderByDescending(u => u.Id).Skip((page - 1) * itemCount)
                 .Take(itemCount).ToList();
         }
 
         public List<ItemInfoDto> ListAllItems(int page, int itemCount)
         {
-            if (itemCount < 1) itemCount = 20;
-            if (page < 1) page = 1;
+            if (itemCount < 1)
+            {
+                itemCount = 20;
+            }
+            if (page < 1)
+            {
+                page = 1;
+            }
             int totalCount = _db.Users.Count();
             if (totalCount < page * itemCount)
             {
-                if (totalCount % itemCount == 0) page = totalCount / itemCount;
-                else page = totalCount / itemCount + 1;
+                if (totalCount % itemCount == 0)
+                {
+                    page = totalCount / itemCount;
+                }
+                else
+                {
+                    page = totalCount / itemCount + 1;
+                }
             }
             List<Item> itemsInDb = _db.Items.OrderByDescending(u => u.Id).Skip((page - 1) * itemCount).Take(itemCount).ToList();
-            List<ItemInfoDto> items = new List<ItemInfoDto>();
+            List<ItemInfoDto> items = new();
             foreach (var item in itemsInDb)
             {  
                 items.Add(GenerateItemInfo(item));

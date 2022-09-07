@@ -27,12 +27,12 @@ namespace GreenBay.Tests.UnitTests
             sellService = new SellService(context);
             buyService = new BuyService(context, sellService);
 
-            if (context.Users.Count() == 0)
+            if (!context.Users.Any())
             {
                 context.Users.AddRange(Constants.Users);
                 context.SaveChanges();
             }
-            if (context.Items.Count() == 0)
+            if (!context.Items.Any())
             {
                 context.Items.AddRange(Constants.Items);
                 context.SaveChanges();
@@ -60,7 +60,7 @@ namespace GreenBay.Tests.UnitTests
         public void Bid_WithVariousParams(int itemIdid, int bid, int expectedStatusCode, string expectedMessage)
         {
             User user = context.Users.First(u => u.Name.Equals("Filip"));
-            ItemBid itemBid = new ItemBid() {ItemId = itemIdid, Bid = bid };
+            ItemBid itemBid = new() {ItemId = itemIdid, Bid = bid };
 
             ResponseItemObjectDto result = buyService.Bid(itemBid, user);
 

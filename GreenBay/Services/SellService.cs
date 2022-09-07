@@ -86,7 +86,7 @@ namespace GreenBay.Services
             {
                 page = 1;
             }
-            int totalCount = _db.Users.Count();
+            int totalCount = _db.Items.Count();
             if (totalCount < page * itemCount)
             {
                 if (totalCount % itemCount == 0)

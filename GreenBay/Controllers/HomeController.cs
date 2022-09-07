@@ -45,7 +45,7 @@ namespace GreenBay.Controllers
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -77,7 +77,7 @@ namespace GreenBay.Controllers
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -109,7 +109,7 @@ namespace GreenBay.Controllers
             int itemCount = _securityService.ReadItemCountFromCookies(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -181,7 +181,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -197,7 +197,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -229,7 +229,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -246,7 +246,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -264,7 +264,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -281,7 +281,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -302,7 +302,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -318,7 +318,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -335,7 +335,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -352,7 +352,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             User user = _securityService.GetUserFromDB(userID);
             if (user == null)
@@ -369,7 +369,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             IResponseCookies cookies = HttpContext.Response.Cookies;
             cookies.Append("Page", page.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
@@ -382,7 +382,7 @@ namespace GreenBay.Controllers
             int userID = _securityService.CheckJWTCookieValidityReturnsUserID(HttpContext.Request.Cookies);
             if (userID == -1)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized("Unauthorized, please log in.");
             }
             IResponseCookies cookies = HttpContext.Response.Cookies;
             cookies.Append("ItemCount", itemCount.ToString(), new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
